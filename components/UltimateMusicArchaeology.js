@@ -702,28 +702,9 @@ const UltimateMusicArchaeology = ({
           <div className="flex items-center gap-4">
             <div className="text-sm text-gray-500">
               {activeTab === 'collaborations' 
-                ? 'Click decades • Hover for details • Streams show collaboration flow'
-                : 'Circle size = activity • Hover for details • Click to filter'
+                ? 'Hover for details • Click to filter/unfilter'
+                : 'Circle size = activity • Hover for details • Click to filter/unfilter'
               }
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setZoomLevel(prev => Math.max(0.5, prev - 0.2))}
-                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
-                title="Zoom Out"
-              >
-                <ZoomOut className="w-4 h-4" />
-              </button>
-              <span className="text-sm text-gray-600 min-w-[60px] text-center">
-                {Math.round(zoomLevel * 100)}%
-              </span>
-              <button
-                onClick={() => setZoomLevel(prev => Math.min(3, prev + 0.2))}
-                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
-                title="Zoom In"
-              >
-                <ZoomIn className="w-4 h-4" />
-              </button>
             </div>
           </div>
         </div>
