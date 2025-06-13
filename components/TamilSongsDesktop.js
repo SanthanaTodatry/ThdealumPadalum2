@@ -529,15 +529,7 @@ const TamilSongsVisualization = () => {
           					  }`}
           					>
           					  <span className="font-semibold">
-          						{decadeInt}s Era
-          						{selectedInDecade.length > 0 && (
-          						  <span className="ml-2 text-xs opacity-75">
-          							({selectedInDecade.length}/{decadeYears.length})
-          						  </span>
-          						)}
-          					  </span>
-          					  <span className="text-xs opacity-75">
-          						{Math.min(...decadeYears)} - {Math.max(...decadeYears)}
+          						{decadeInt}s
           					  </span>
           					</button>
           					
@@ -553,7 +545,8 @@ const TamilSongsVisualization = () => {
           							  : 'bg-white text-blue-600 border-blue-200 hover:border-blue-400 hover:bg-blue-50'
           						  }`}
           						>
-          						  {year}
+        						  const shortYear = year.slice(-2);
+        						  {shortYear}
           						</button>
           					  ))}
           					</div>
