@@ -427,7 +427,7 @@ const TamilSongsVisualization = () => {
       
       <div className="flex flex-1 overflow-hidden">
         {/* Panel 1: Filters */}
-        <div className="w-64 bg-white border-r border-blue-200 flex flex-col">
+        <div className="w-80 bg-white border-r border-blue-200 flex flex-col">
           <div className="p-4 border-b border-blue-200">
             {/* Reset Button - RENAMED */}
             <button
@@ -538,7 +538,7 @@ const TamilSongsVisualization = () => {
                                 <button
                                   key={year}
                                   onClick={() => toggleFilter(year, selectedYears, setSelectedYears)}
-                                  className={`px-2 py-1 text-xs rounded border transition-all ${
+                                  className={`px-3 py-2 text-xs font-medium rounded border transition-all min-w-0 ${
                                     selectedYears.includes(year)
                                       ? 'bg-blue-500 text-white border-blue-500'
                                       : 'bg-white text-blue-600 border-blue-200 hover:border-blue-400 hover:bg-blue-50'
@@ -560,7 +560,7 @@ const TamilSongsVisualization = () => {
             {activeFilterTab === 'singers' && (
               <div>
                 <h3 className="text-sm font-medium text-blue-800 mb-3">Select Singers</h3>
-                <div className="flex flex-wrap gap-1">
+                <div className="space-y-2">
                   {uniqueSingers.map(singer => (
                     <FilterButton
                       key={singer}
@@ -578,7 +578,7 @@ const TamilSongsVisualization = () => {
             {activeFilterTab === 'composers' && (
               <div>
                 <h3 className="text-sm font-medium text-blue-800 mb-3">Select Composers</h3>
-                <div className="flex flex-wrap gap-1">
+                <div className="space-y-2">
                   {uniqueComposers.map(composer => (
                     <FilterButton
                       key={composer}
@@ -596,7 +596,7 @@ const TamilSongsVisualization = () => {
             {activeFilterTab === 'lyricists' && (
               <div>
                 <h3 className="text-sm font-medium text-blue-800 mb-3">Select Lyricists</h3>
-                <div className="flex flex-wrap gap-1">
+                <div className="space-y-2">
                   {uniqueLyricists.map(lyricist => (
                     <FilterButton
                       key={lyricist}
