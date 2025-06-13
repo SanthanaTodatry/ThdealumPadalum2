@@ -657,8 +657,8 @@ const TamilSongsVisualization = () => {
           />
         </div>
 
-       {/* Panel 3: Clean Player + Playlist Layout - FIXED WIDTH */}
-       <div className="bg-white border-l border-blue-200 flex flex-col" style={{ width: '300px', minWidth: '300px' }}>
+        {/* Panel 3: Clean Player + Playlist Layout - FIXED WIDTH */}
+        <div className="bg-white border-l border-blue-200 flex flex-col" style={{ width: '300px', minWidth: '300px' }}>
          {/* 1. PLAYER ON TOP */}
          {currentSong && (
            <div className="border-b border-blue-200">
