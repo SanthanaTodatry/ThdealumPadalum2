@@ -92,7 +92,8 @@ export function renderSunburstChart(containerId, songsData) {
     uniformtext: {
       minsize: 12,
       mode: 'hide'
-    }
+    },
+    transition: { duration: 500, easing: 'cubic-in-out' } // enable smooth transitions on click
   };
 
   Plotly.newPlot(containerId, [trace], layout, {
