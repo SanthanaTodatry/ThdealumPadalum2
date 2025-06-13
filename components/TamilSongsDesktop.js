@@ -427,7 +427,7 @@ const TamilSongsVisualization = () => {
       
       <div className="flex flex-1 overflow-hidden">
         {/* Panel 1: Filters - INCREASED WIDTH */}
-        <div className="w-80 bg-white border-r border-blue-200 flex flex-col">
+        <div className="bg-white border-r border-blue-200 flex flex-col" style={{ width: '400px', minWidth: '400px' }}>                
           <div className="p-4 border-b border-blue-200">
             {/* Reset Button - RENAMED */}
             <button
