@@ -427,7 +427,7 @@ const TamilSongsVisualization = () => {
       
       <div className="flex flex-1 overflow-hidden">
         {/* Panel 1: Filters - INCREASED WIDTH */}
-        <div className="bg-white border-r border-blue-200 flex flex-col" style={{ width: '300px', minWidth: '300px' }}>                
+          <div className="bg-white border-r border-blue-200 flex flex-col" style={{ width: '280px', minWidth: '280px' }}>
           <div className="p-4 border-b border-blue-200">
             {/* Reset Button - RENAMED */}
             <button
@@ -645,7 +645,7 @@ const TamilSongsVisualization = () => {
         </div>
 
         {/* Panel 2: Stunning Visualizations */}
-        <div className="flex-1 p-4 overflow-y-auto" style={{ height: '720px', overflow: 'visible' }}>
+        <div className="flex-1 p-4 overflow-y-auto min-w-0" style={{ height: '720px', overflow: 'visible' }}>
           <UltimateMusicArchaeology
             filteredSongs={filteredSongs}
             onYearClick={handleYearClick}
@@ -658,7 +658,7 @@ const TamilSongsVisualization = () => {
         </div>
 
        {/* Panel 3: Clean Player + Playlist Layout */}
-       <div className="w-80 bg-white border-l border-blue-200 flex flex-col">
+       <div className="bg-white border-l border-blue-200 flex flex-col" style={{ width: '280px', minWidth: '280px' }}>
          {/* 1. PLAYER ON TOP */}
          {currentSong && (
            <div className="border-b border-blue-200">
