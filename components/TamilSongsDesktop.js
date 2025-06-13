@@ -506,6 +506,7 @@ const TamilSongsVisualization = () => {
           				const decadeYears = years.sort((a, b) => a - b);
           				const selectedInDecade = decadeYears.filter(year => selectedYears.includes(year));
           				const allDecadeSelected = selectedInDecade.length === decadeYears.length;
+     						  const shortYear = year.slice(-2);
           				
           				return (
           				  <div key={decade} className="border border-blue-200 rounded-lg p-3">
@@ -545,7 +546,6 @@ const TamilSongsVisualization = () => {
           							  : 'bg-white text-blue-600 border-blue-200 hover:border-blue-400 hover:bg-blue-50'
           						  }`}
           						>
-        						  const shortYear = year.slice(-2);
         						  {shortYear}
           						</button>
           					  ))}
