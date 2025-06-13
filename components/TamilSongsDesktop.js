@@ -485,78 +485,76 @@ const TamilSongsVisualization = () => {
 
           {/* Filter Content */}
           <div className="flex-1 p-4 overflow-y-auto">
+
             {/* Years Tab */}
-          	{activeFilterTab === 'years' && (
-          	  <div>
-          		<h3 className="text-sm font-medium text-blue-800 mb-3">Select Years by Decade</h3>
-          		<div className="space-y-3">
-          		  {/* Group years by decade */}
-          		  {(() => {
-          			const decades = {};
-          			uniqueYears.forEach(year => {
-          			  const decade = Math.floor(year / 10) * 10;
-          			  if (!decades[decade]) decades[decade] = [];
-          			  decades[decade].push(year);
-          			});
-          			
-          			return Object.entries(decades)
-          			  .sort(([a], [b]) => parseInt(a) - parseInt(b))
-          			  .map(([decade, years]) => {
-          				const decadeInt = parseInt(decade);
-          				const decadeYears = years.sort((a, b) => a - b);
-          				const selectedInDecade = decadeYears.filter(year => selectedYears.includes(year));
-          				const allDecadeSelected = selectedInDecade.length === decadeYears.length;
-     						  const shortYear = year.slice(-2);
-          				
-          				return (
-          				  <div key={decade} className="border border-blue-200 rounded-lg p-3">
-          					{/* Decade Header Button */}
-          					<button
-          					  onClick={() => {
-          						if (allDecadeSelected) {
-          						  // Remove all years in this decade
-          						  setSelectedYears(prev => prev.filter(year => !decadeYears.includes(year)));
-          						} else {
-          						  // Add all years in this decade
-          						  setSelectedYears(prev => [...new Set([...prev, ...decadeYears])]);
-          						}
-          					  }}
-          					  className={`w-full flex items-center justify-between p-2 rounded-md text-sm font-medium transition-all ${
-          						selectedInDecade.length > 0
-          						  ? allDecadeSelected
-          							? 'bg-blue-600 text-white'
-          							: 'bg-blue-100 text-blue-800 border border-blue-300'
-          						  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-          					  }`}
-          					>
-          					  <span className="font-semibold">
-          						{decadeInt}s
-          					  </span>
-          					</button>
-          					
-          					{/* Individual Year Buttons */}
-          					<div className="mt-2 grid grid-cols-5 gap-1">
-          					  {decadeYears.map(year => (
-          						<button
-          						  key={year}
-          						  onClick={() => toggleFilter(year, selectedYears, setSelectedYears)}
-          						  className={`px-2 py-1 text-xs rounded border transition-all ${
-          							selectedYears.includes(year)
-          							  ? 'bg-blue-500 text-white border-blue-500'
-          							  : 'bg-white text-blue-600 border-blue-200 hover:border-blue-400 hover:bg-blue-50'
-          						  }`}
-          						>
-        						  {shortYear}
-          						</button>
-          					  ))}
-          					</div>
-          				  </div>
-          				);
-          			  });
-          		  })()}
-          		</div>
-          	  </div>
-          	)}
+            {activeFilterTab === 'years' && (
+              <div>
+                <h3 className="text-sm font-medium text-blue-800 mb-3">Select Years by Decade</h3>
+                <div className="space-y-3">
+                  {/* Group years by decade */}
+                  {(() => {
+                    const decades = {};
+                    uniqueYears.forEach(year => {
+                      const decade = Math.floor(year / 10) * 10;
+                      if (!decades[decade]) decades[decade] = [];
+                      decades[decade].push(year);
+                    });
+                    
+                    return Object.entries(decades)
+                      .sort(([a], [b]) => parseInt(a) - parseInt(b))
+                      .map(([decade, years]) => {
+                        const decadeInt = parseInt(decade);
+                        const decadeYears = years.sort((a, b) => a - b);
+                        const selectedInDecade = decadeYears.filter(year => selectedYears.includes(year));
+                        const allDecadeSelected = selectedInDecade.length === decadeYears.length;
+                        
+                        return (
+                          <div key={decade} className="border border-blue-200 rounded-lg p-3">
+                            {/* Decade Header Button */}
+                            <button
+                              onClick={() => {
+                                if (allDecadeSelected) {
+                                  // Remove all years in this decade
+                                  setSelectedYears(prev => prev.filter(year => !decadeYears.includes(year)));
+                                } else {
+                                  // Add all years in this decade
+                                  setSelectedYears(prev => [...new Set([...prev, ...decadeYears])]);
+                                }
+                              }}
+                              className={`w-full p-2 rounded-md text-sm font-semibold transition-all ${
+                                selectedInDecade.length > 0
+                                  ? allDecadeSelected
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                              }`}
+                            >
+                              {decadeInt}s
+                            </button>
+                            
+                            {/* Individual Year Buttons */}
+                            <div className="mt-2 grid grid-cols-5 gap-1">
+                              {decadeYears.map(year => (
+                                <button
+                                  key={year}
+                                  onClick={() => toggleFilter(year, selectedYears, setSelectedYears)}
+                                  className={`px-2 py-1 text-xs rounded border transition-all ${
+                                    selectedYears.includes(year)
+                                      ? 'bg-blue-500 text-white border-blue-500'
+                                      : 'bg-white text-blue-600 border-blue-200 hover:border-blue-400 hover:bg-blue-50'
+                                  }`}
+                                >
+                                  {year.toString().slice(-2)}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      });
+                  })()}
+                </div>
+              </div>
+            )}
 
             {/* Singers Tab */}
             {activeFilterTab === 'singers' && (
