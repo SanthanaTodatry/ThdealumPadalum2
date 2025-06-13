@@ -390,7 +390,7 @@ const TamilSongsVisualization = () => {
   const FilterButton = ({ active, onClick, children }) => (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 text-xs rounded border transition-all ${
+      className={`px-3 py-1.5 text-xs rounded border transition-all w-full text-left ${
         active 
           ? 'bg-blue-600 text-white border-blue-600' 
           : 'bg-white text-blue-600 border-blue-300 hover:border-blue-500'
@@ -426,7 +426,7 @@ const TamilSongsVisualization = () => {
       </div>
       
       <div className="flex flex-1 overflow-hidden">
-        {/* Panel 1: Filters */}
+        {/* Panel 1: Filters - INCREASED WIDTH */}
         <div className="w-80 bg-white border-r border-blue-200 flex flex-col">
           <div className="p-4 border-b border-blue-200">
             {/* Reset Button - RENAMED */}
@@ -485,8 +485,7 @@ const TamilSongsVisualization = () => {
 
           {/* Filter Content */}
           <div className="flex-1 p-4 overflow-y-auto">
-
-            {/* Years Tab */}
+            {/* Years Tab - DECADE BASED WITH 2-DIGIT YEARS */}
             {activeFilterTab === 'years' && (
               <div>
                 <h3 className="text-sm font-medium text-blue-800 mb-3">Select Years by Decade</h3>
@@ -510,7 +509,7 @@ const TamilSongsVisualization = () => {
                         
                         return (
                           <div key={decade} className="border border-blue-200 rounded-lg p-3">
-                            {/* Decade Header Button */}
+                            {/* Decade Header Button - SIMPLIFIED */}
                             <button
                               onClick={() => {
                                 if (allDecadeSelected) {
@@ -532,7 +531,7 @@ const TamilSongsVisualization = () => {
                               {decadeInt}s
                             </button>
                             
-                            {/* Individual Year Buttons */}
+                            {/* Individual Year Buttons - IMPROVED SIZING */}
                             <div className="mt-2 grid grid-cols-5 gap-1">
                               {decadeYears.map(year => (
                                 <button
@@ -556,7 +555,7 @@ const TamilSongsVisualization = () => {
               </div>
             )}
 
-            {/* Singers Tab */}
+            {/* Singers Tab - VERTICAL LAYOUT */}
             {activeFilterTab === 'singers' && (
               <div>
                 <h3 className="text-sm font-medium text-blue-800 mb-3">Select Singers</h3>
@@ -574,7 +573,7 @@ const TamilSongsVisualization = () => {
               </div>
             )}
 
-            {/* Composers Tab */}
+            {/* Composers Tab - VERTICAL LAYOUT */}
             {activeFilterTab === 'composers' && (
               <div>
                 <h3 className="text-sm font-medium text-blue-800 mb-3">Select Composers</h3>
@@ -592,7 +591,7 @@ const TamilSongsVisualization = () => {
               </div>
             )}
 
-            {/* Lyricists Tab */}
+            {/* Lyricists Tab - VERTICAL LAYOUT */}
             {activeFilterTab === 'lyricists' && (
               <div>
                 <h3 className="text-sm font-medium text-blue-800 mb-3">Select Lyricists</h3>
