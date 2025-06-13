@@ -66,24 +66,33 @@ export function renderSunburstChart(containerId, songsData) {
     parents,
     values,
     branchvalues: 'total',
-    outsidetextfont: { size: 14, color: '#444' },
-    leaf: { opacity: 0.6 },
+    outsidetextfont: { size: 16, color: '#333' },
+    insidetextorientation: 'radial',
+    leaf: { opacity: 0.7 },
     marker: {
       line: { width: 1 },
       colors: labels.map(label => {
         if (label.includes('/')) return undefined;
         if (label.includes('s')) return '#facc15'; // Decade = yellow
-        if (label.includes('Kannadasan')) return '#fb923c'; // Sample override
         return '#a5b4fc'; // Default pastel
       })
     }
   };
 
   const layout = {
-    margin: { l: 0, r: 0, b: 0, t: 40 },
-    sunburstcolorway: ['#facc15', '#fb923c', '#c084fc', '#38bdf8'],
+    margin: { l: 10, r: 10, b: 10, t: 60 },
+    title: {
+      text: '🎵 Tamil Songs Sunburst by Decade → Lyricist → Composer → Singer',
+      font: { size: 20 },
+      x: 0.5,
+      xanchor: 'center'
+    },
+    sunburstcolorway: ['#facc15', '#fb923c', '#c084fc', '#38bdf8', '#a3e635', '#f472b6'],
     extendsunburstcolorway: true,
-    title: '🎵 Tamil Songs Sunburst by Decade → Lyricist → Composer → Singer',
+    uniformtext: {
+      minsize: 12,
+      mode: 'hide'
+    }
   };
 
   Plotly.newPlot(containerId, [trace], layout, { responsive: true });
