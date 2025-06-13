@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-import { ZoomIn, ZoomOut, Users, Music, Mic, PenTool } from 'lucide-react';
+import { ZoomIn, ZoomOut, Users, Music, Mic, PenTool, Sun } from 'lucide-react';
+import EnhancedSunburstChart from './EnhancedSunburstChart';
 
 const UltimateMusicArchaeology = ({ 
   filteredSongs, 
@@ -122,7 +123,7 @@ const UltimateMusicArchaeology = ({
     };
   }, [filteredSongs]);
 
-  // Filter by year range and search (search now handled by parent component)
+  // Filter by year range
   const filteredArtists = useMemo(() => {
     const yearFilter = (artist) => {
       const activeYears = Array.from(artist.activeYears || []);
@@ -140,177 +141,84 @@ const UltimateMusicArchaeology = ({
     };
   }, [artistNetworks, selectedYearRange]);
 
-  // Draw Global Timeline
+  // Draw timeline
   useEffect(() => {
-    if (!timelineRef.current || !timelineData.length) return;
+    if (!timelineRef.current || !timelineData) return;
 
     const container = d3.select(timelineRef.current);
     container.selectAll("*").remove();
 
-    const margin = { top: 10, right: 10, bottom: 30, left: 10 };
-    const width = 800 - margin.left - margin.right;
-    const height = 120 - margin.top - margin.bottom; // Increased height
-
-    const svg = container
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom);
-
-    const g = svg.append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
-
-    // Scales
-    const xScale = d3.scaleLinear()
-      .domain(d3.extent(timelineData, d => d.year))
-      .range([0, width]);
-
-    const yScale = d3.scaleLinear()
-      .domain([0, d3.max(timelineData, d => d.total)])
-      .range([height, 0]);
-
-    // Color scale for decades
-    const colorScale = d3.scaleOrdinal()
-      .domain(['1960', '1970', '1980', '1990', '2000', '2010', '2020'])
-      .range(['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#FFB74D']);
-
-    // Area generator
-    const area = d3.area()
-      .x(d => xScale(d.year))
-      .y0(height)
-      .y1(d => yScale(d.total))
-      .curve(d3.curveCardinal);
-
-    // Add gradient
-    const gradient = svg.append("defs")
-      .append("linearGradient")
-      .attr("id", "timelineGradient")
-      .attr("gradientUnits", "userSpaceOnUse")
-      .attr("x1", 0).attr("y1", height)
-      .attr("x2", 0).attr("y2", 0);
-
-    gradient.append("stop")
-      .attr("offset", "0%")
-      .attr("stop-color", "#4ECDC4")
-      .attr("stop-opacity", 0.1);
-
-    gradient.append("stop")
-      .attr("offset", "100%")
-      .attr("stop-color", "#4ECDC4")
-      .attr("stop-opacity", 0.8);
-
-    // Draw area
-    g.append("path")
-      .datum(timelineData)
-      .attr("fill", "url(#timelineGradient)")
-      .attr("d", area);
-
-    // Draw line
-    const line = d3.line()
-      .x(d => xScale(d.year))
-      .y(d => yScale(d.total))
-      .curve(d3.curveCardinal);
-
-    g.append("path")
-      .datum(timelineData)
-      .attr("fill", "none")
-      .attr("stroke", "#4ECDC4")
-      .attr("stroke-width", 3)
-      .attr("d", line);
-
-    // Add interactive dots
-    g.selectAll(".timeline-dot")
-      .data(timelineData)
-      .enter()
-      .append("circle")
-      .attr("class", "timeline-dot")
-      .attr("cx", d => xScale(d.year))
-      .attr("cy", d => yScale(d.total))
-      .attr("r", 4)
-      .attr("fill", d => colorScale(Math.floor(d.year / 10) * 10))
-      .attr("stroke", "white")
-      .attr("stroke-width", 2)
-      .style("cursor", "pointer")
-      .on("mouseover", function(event, d) {
-        d3.select(this).attr("r", 6);
-        
-        // Tooltip
-        const tooltip = d3.select("body").append("div")
-          .attr("class", "timeline-tooltip")
-          .style("position", "absolute")
-          .style("background", "rgba(0,0,0,0.9)")
-          .style("color", "white")
-          .style("padding", "10px")
-          .style("border-radius", "8px")
-          .style("font-size", "12px")
-          .style("pointer-events", "none")
-          .style("z-index", 1000);
-
-        tooltip.html(`
-          <strong>${d.year}</strong><br/>
-          Songs: ${d.total}<br/>
-          Composers: ${d.composers}<br/>
-          Singers: ${d.singers}<br/>
-          Lyricists: ${d.lyricists}
-        `)
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY - 10) + "px");
-      })
-      .on("mouseout", function(event, d) {
-        d3.select(this).attr("r", 4);
-        d3.selectAll(".timeline-tooltip").remove();
-      })
-      .on("click", function(event, d) {
-        setSelectedYearRange([d.year, d.year]);
-        onYearClick({ activePayload: [{ payload: { year: d.year } }] });
-      });
-
-    // Axes - only X axis
-    g.append("g")
-      .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
-
-    // Year range brush
-    const brush = d3.brushX()
-      .extent([[0, 0], [width, height]])
-      .on("brush end", function(event) {
-        if (event.selection) {
-          const [x0, x1] = event.selection;
-          const year0 = Math.round(xScale.invert(x0));
-          const year1 = Math.round(xScale.invert(x1));
-          setSelectedYearRange([year0, year1]);
-        }
-      });
-
-    g.append("g")
-      .attr("class", "brush")
-      .call(brush);
-
-  }, [timelineData, onYearClick]);
-
-  // Draw main visualization based on active tab
-  useEffect(() => {
-    if (!svgRef.current || !filteredArtists[activeTab]) return;
-
-    const container = d3.select(svgRef.current);
-    container.selectAll("*").remove();
-
-    const width = 800;
-    const height = 500;
+    const width = 400;
+    const height = 80;
+    const margin = { top: 10, right: 20, bottom: 30, left: 20 };
 
     const svg = container
       .append("svg")
       .attr("width", width)
       .attr("height", height);
 
-    if (activeTab === 'collaborations') {
-      drawCollaborationNetwork(svg, filteredArtists.collaborations, width, height);
-    } else {
-      drawArtistVisualization(svg, filteredArtists[activeTab], activeTab, width, height);
-    }
-  }, [filteredArtists, activeTab, zoomLevel, highlightedArtist]);
+    const xScale = d3.scaleLinear()
+      .domain(d3.extent(timelineData, d => d.year))
+      .range([margin.left, width - margin.right]);
 
+    const yScale = d3.scaleLinear()
+      .domain([0, d3.max(timelineData, d => d.total)])
+      .range([height - margin.bottom, margin.top]);
+
+    // Draw line
+    const line = d3.line()
+      .x(d => xScale(d.year))
+      .y(d => yScale(d.total))
+      .curve(d3.curveMonotoneX);
+
+    svg.append("path")
+      .datum(timelineData)
+      .attr("d", line)
+      .attr("fill", "none")
+      .attr("stroke", "#3b82f6")
+      .attr("stroke-width", 2);
+
+    // Draw dots
+    svg.selectAll(".dot")
+      .data(timelineData)
+      .enter().append("circle")
+      .attr("class", "dot")
+      .attr("cx", d => xScale(d.year))
+      .attr("cy", d => yScale(d.total))
+      .attr("r", 3)
+      .attr("fill", "#3b82f6")
+      .style("cursor", "pointer")
+      .on("click", (event, d) => {
+        setSelectedYearRange([d.year, d.year]);
+        onYearClick({ activePayload: [{ payload: { year: d.year } }] });
+      });
+
+    // Add brush for year range selection
+    const brush = d3.brushX()
+      .extent([[margin.left, margin.top], [width - margin.right, height - margin.bottom]])
+      .on("end", (event) => {
+        if (!event.selection) return;
+        const [x0, x1] = event.selection;
+        const yearRange = [
+          Math.round(xScale.invert(x0)),
+          Math.round(xScale.invert(x1))
+        ];
+        setSelectedYearRange(yearRange);
+      });
+
+    svg.append("g")
+      .attr("class", "brush")
+      .call(brush);
+
+    // Add axis
+    svg.append("g")
+      .attr("transform", `translate(0,${height - margin.bottom})`)
+      .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+
+  }, [timelineData, onYearClick]);
+
+  // Visualization functions for other tabs
   const drawCollaborationNetwork = (svg, collaborations, width, height) => {
-    // Create sunburst visualization for collaborations
     const margin = { top: 20, right: 20, bottom: 20, left: 20 };
     const radius = Math.min(width, height) / 2 - Math.max(...Object.values(margin));
 
@@ -414,7 +322,7 @@ const UltimateMusicArchaeology = ({
         return `translate(${Math.cos(angle - Math.PI / 2) * radius},${Math.sin(angle - Math.PI / 2) * radius}) rotate(${angle * 180 / Math.PI - 90})`;
       })
       .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "middle")
+      .attr("dominant-baseline", "central")
       .style("font-size", d => Math.min(12, (d.y1 - d.y0) * 0.5) + "px")
       .style("font-weight", "bold")
       .style("fill", "#333")
@@ -533,66 +441,56 @@ const UltimateMusicArchaeology = ({
   };
 
   const drawArtistVisualization = (svg, artists, type, width, height) => {
-    const packLayout = d3.pack()
-      .size([width, height])
-      .padding(5);
-
-    const root = d3.hierarchy({ children: artists })
-      .sum(d => d.totalSongs || 1)
-      .sort((a, b) => b.value - a.value);
-
-    packLayout(root);
-
-    const colorScale = d3.scaleSequential()
-      .domain([0, d3.max(artists, d => d.totalSongs)])
-      .interpolator(d3.interpolateViridis);
+    // Create a force simulation for artist bubbles
+    const simulation = d3.forceSimulation(artists.slice(0, 100))
+      .force("charge", d3.forceManyBody().strength(-50))
+      .force("center", d3.forceCenter(width / 2, height / 2))
+      .force("collision", d3.forceCollide().radius(d => Math.sqrt(d.totalSongs) * 3 + 5));
 
     const circles = svg.selectAll("circle")
-      .data(root.children)
+      .data(artists.slice(0, 100))
       .enter()
       .append("circle")
-      .attr("cx", d => d.x)
-      .attr("cy", d => d.y)
-      .attr("r", d => d.r * zoomLevel)
-      .attr("fill", d => colorScale(d.data.totalSongs))
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 2)
+      .attr("r", d => Math.sqrt(d.totalSongs) * 3 + 5)
+      .attr("fill", (d, i) => d3.schemeCategory10[i % 10])
+      .attr("opacity", 0.7)
       .style("cursor", "pointer")
       .on("mouseover", function(event, d) {
-        d3.select(this)
-          .attr("r", d.r * zoomLevel * 1.2)
-          .attr("stroke-width", 4);
-        
-        showTooltip(event, d.data, type);
+        d3.select(this).attr("opacity", 1);
+        showTooltip(event, d, type);
       })
-      .on("mouseout", function(event, d) {
-        d3.select(this)
-          .attr("r", d.r * zoomLevel)
-          .attr("stroke-width", 2);
-        
+      .on("mouseout", function() {
+        d3.select(this).attr("opacity", 0.7);
         hideTooltip();
       })
       .on("click", function(event, d) {
-        setHighlightedArtist(d.data.name);
-        if (type === 'singers') onSingerClick({ name: d.data.name });
-        if (type === 'composers') onComposerClick({ name: d.data.name });
-        if (type === 'lyricists') onLyricistClick({ name: d.data.name });
+        if (type === 'singers') onSingerClick({ name: d.name });
+        else if (type === 'composers') onComposerClick({ name: d.name });
+        else if (type === 'lyricists') onLyricistClick({ name: d.name });
       });
 
     // Add labels for larger circles
-    svg.selectAll("text")
-      .data(root.children.filter(d => d.r > 20))
+    const labels = svg.selectAll("text")
+      .data(artists.slice(0, 20))
       .enter()
       .append("text")
-      .attr("x", d => d.x)
-      .attr("y", d => d.y)
+      .text(d => d.name.length > 12 ? d.name.substring(0, 12) + "..." : d.name)
       .attr("text-anchor", "middle")
       .attr("dy", "0.35em")
-      .style("font-size", d => Math.min(d.r / 3, 14) + "px")
+      .style("font-size", "10px")
       .style("font-weight", "bold")
-      .style("fill", "white")
-      .style("pointer-events", "none")
-      .text(d => d.data.name.length > 12 ? d.data.name.substring(0, 12) + "..." : d.data.name);
+      .style("fill", "#333")
+      .style("pointer-events", "none");
+
+    simulation.on("tick", () => {
+      circles
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+      
+      labels
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
+    });
   };
 
   const showTooltip = (event, data, type) => {
@@ -638,6 +536,28 @@ const UltimateMusicArchaeology = ({
     d3.selectAll(".main-tooltip").remove();
   };
 
+  // Draw main visualization based on active tab
+  useEffect(() => {
+    if (!svgRef.current || !filteredArtists[activeTab] || activeTab === 'sunburst') return;
+
+    const container = d3.select(svgRef.current);
+    container.selectAll("*").remove();
+
+    const width = 800;
+    const height = 500;
+
+    const svg = container
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+    if (activeTab === 'collaborations') {
+      drawCollaborationNetwork(svg, filteredArtists.collaborations, width, height);
+    } else {
+      drawArtistVisualization(svg, filteredArtists[activeTab], activeTab, width, height);
+    }
+  }, [filteredArtists, activeTab, zoomLevel, highlightedArtist]);
+
   return (
     <div className="h-full flex flex-col">
       {/* Timeline with Vertical Tab Navigation */}
@@ -658,9 +578,10 @@ const UltimateMusicArchaeology = ({
             <div ref={timelineRef}></div>
           </div>
           
-          {/* Vertical Tab Navigation */}
+          {/* Vertical Tab Navigation - ADDED SUNBURST TAB */}
           <div className="w-48 flex flex-col gap-2">
             {[
+              { key: 'sunburst', label: '🌞 Sunburst', icon: Sun, count: filteredSongs.length },
               { key: 'collaborations', label: '🤝 Collaborations', icon: Users, count: filteredArtists.collaborations.length },
               { key: 'singers', label: '🎤 Singers', icon: Mic, count: filteredArtists.singers.length },
               { key: 'composers', label: '🎼 Composers', icon: Music, count: filteredArtists.composers.length },
@@ -690,28 +611,56 @@ const UltimateMusicArchaeology = ({
 
       {/* Main Visualization */}
       <div className="flex-1 bg-white rounded-lg border border-gray-200 p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">
-            {activeTab === 'collaborations' && `🤝 ${filteredArtists.collaborations.length} Collaboration Networks`}
-            {activeTab === 'singers' && `🎤 ${filteredArtists.singers.length} Singers`}
-            {activeTab === 'composers' && `🎼 ${filteredArtists.composers.length} Composers`}
-            {activeTab === 'lyricists' && `✍️ ${filteredArtists.lyricists.length} Lyricists`}
-          </h3>
-          
-          {/* Zoom Controls */}
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-gray-500">
-              {activeTab === 'collaborations' 
-                ? 'Hover for details • Click to filter/unfilter'
-                : 'Circle size = activity • Hover for details • Click to filter/unfilter'
-              }
+        {/* Render Enhanced Sunburst when sunburst tab is active */}
+        {activeTab === 'sunburst' ? (
+          <EnhancedSunburstChart
+            filteredSongs={filteredSongs}
+            onYearClick={onYearClick}
+            onSingerClick={onSingerClick}
+            onComposerClick={onComposerClick}
+            onLyricistClick={onLyricistClick}
+            resetTrigger={resetTrigger}
+          />
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">
+                {activeTab === 'collaborations' && `🤝 ${filteredArtists.collaborations.length} Collaboration Networks`}
+                {activeTab === 'singers' && `🎤 ${filteredArtists.singers.length} Singers`}
+                {activeTab === 'composers' && `🎼 ${filteredArtists.composers.length} Composers`}
+                {activeTab === 'lyricists' && `✍️ ${filteredArtists.lyricists.length} Lyricists`}
+              </h3>
+              
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-4">
+                <div className="text-sm text-gray-500">
+                  {activeTab === 'collaborations' 
+                    ? 'Hover for details • Click to filter/unfilter'
+                    : 'Circle size = activity • Hover for details • Click to filter/unfilter'
+                  }
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setZoomLevel(Math.max(0.5, zoomLevel - 0.2))}
+                    className="p-2 bg-gray-100 rounded hover:bg-gray-200"
+                  >
+                    <ZoomOut className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setZoomLevel(Math.min(3, zoomLevel + 0.2))}
+                    className="p-2 bg-gray-100 rounded hover:bg-gray-200"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        
-        <div className="h-96 w-full overflow-hidden rounded-lg border">
-          <div ref={svgRef}></div>
-        </div>
+            
+            <div className="h-96 w-full overflow-hidden rounded-lg border">
+              <div ref={svgRef}></div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
