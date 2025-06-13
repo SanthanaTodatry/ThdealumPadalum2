@@ -66,6 +66,7 @@ export function renderSunburstChart(containerId, songsData) {
     parents,
     values,
     branchvalues: 'total',
+    maxdepth: -1,  // show all levels
     outsidetextfont: { size: 16, color: '#333' },
     insidetextorientation: 'radial',
     leaf: { opacity: 0.7 },
@@ -95,5 +96,8 @@ export function renderSunburstChart(containerId, songsData) {
     }
   };
 
-  Plotly.newPlot(containerId, [trace], layout, { responsive: true });
+  Plotly.newPlot(containerId, [trace], layout, {
+    responsive: true,
+    staticPlot: true  // disables drill-down click zoom
+  });
 }
