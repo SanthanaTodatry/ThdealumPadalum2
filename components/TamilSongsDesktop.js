@@ -593,7 +593,7 @@ const TamilSongsVisualization = () => {
         </div>
 
         {/* Panel 2: Stunning Visualizations */}
-        <div className="flex-1 p-4 overflow-y-auto">
+        <div className="flex-1 p-4 overflow-y-auto" style={{ height: '720px', overflow: 'visible' }}>
           <UltimateMusicArchaeology
             filteredSongs={filteredSongs}
             onYearClick={handleYearClick}
