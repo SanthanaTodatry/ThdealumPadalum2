@@ -426,8 +426,346 @@ const TamilSongsVisualization = () => {
       </div>
       
       <div className="flex flex-1 overflow-hidden">
-        {/* Panel 1: Filters - INCREASED WIDTH */}
-        <div className="bg-white border-r border-blue-200 flex flex-col" style={{ width: '400px', minWidth: '400px' }}>                
+        {/* Panel 1: Filters - FIXED WIDTH */}
+        <div className="bg-white border-r border-blue-200 flex flex-col" style={{ width: '300px', minWidth: '300px' }}>
+          <div className="p-4 border-b border-blue-200">
+            {/* Reset Button - RENAMED */}
+            <button
+              onClick={resetFilters}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm mb-4"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Reset All
+            </button>
+
+            {/* Filter Tabs - Match Graph Layout */}
+            <div className="grid grid-cols-2 gap-1">
+              <button
+                onClick={() => setActiveFilterTab('years')}
+                className={`px-2 py-1.5 text-xs rounded transition-colors ${
+                  activeFilterTab === 'years' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                }`}
+              >
+                Years {selectedYears.length > 0 && `(${selectedYears.length})`}
+              </button>
+              <button
+                onClick={() => setActiveFilterTab('singers')}
+                className={`px-2 py-1.5 text-xs rounded transition-colors ${
+                  activeFilterTab === 'singers' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                }`}
+              >
+                Singers {selectedSingers.length > 0 && `(${selectedSingers.length})`}
+              </button>
+              <button
+                onClick={() => setActiveFilterTab('composers')}
+                className={`px-2 py-1.5 text-xs rounded transition-colors ${
+                  activeFilterTab === 'composers' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                }`}
+              >
+                Composers {selectedComposers.length > 0 && `(${selectedComposers.length})`}
+              </button>
+              <button
+                onClick={() => setActiveFilterTab('lyricists')}
+                className={`px-2 py-1.5 text-xs rounded transition-colors ${
+                  activeFilterTab === 'lyricists' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                }`}
+              >
+                Lyricists {selectedLyricists.length > 0 && `(${selectedLyricists.length})`}
+              </button>
+            </div>
+          </div>
+
+          {/* Filter Content */}
+          <div className="flex-1 p-4 overflow-y-auto">
+            {/* Years Tab - DECADE BASED WITH 2-DIGIT YEARS */}
+            {activeFilterTab === 'years' && (
+              <div>
+                <h3 className="text-sm font-medium text-blue-800 mb-3">Select Years by Decade</h3>
+                <div className="space-y-3">
+                  {/* Group years by decade */}
+                  {(() => {
+                    const decades = {};
+                    uniqueYears.forEach(year => {
+                      const decade = Math.floor(year / 10) * 10;
+                      if (!decades[decade]) decades[decade] = [];
+                      decades[decade].push(year);
+                    });
+                    
+                    return Object.entries(decades)
+                      .sort(([a], [b]) => parseInt(a) - parseInt(b))
+                      .map(([decade, years]) => {
+                        const decadeInt = parseInt(decade);
+                        const decadeYears = years.sort((a, b) => a - b);
+                        const selectedInDecade = decadeYears.filter(year => selectedYears.includes(year));
+                        const allDecadeSelected = selectedInDecade.length === decadeYears.length;
+                        
+                        return (
+                          <div key={decade} className="border border-blue-200 rounded-lg p-3">
+                            {/* Decade Header Button - SIMPLIFIED */}
+                            <button
+                              onClick={() => {
+                                if (allDecadeSelected) {
+                                  // Remove all years in this decade
+                                  setSelectedYears(prev => prev.filter(year => !decadeYears.includes(year)));
+                                } else {
+                                  // Add all years in this decade
+                                  setSelectedYears(prev => [...new Set([...prev, ...decadeYears])]);
+                                }
+                              }}
+                              className={`w-full p-2 rounded-md text-sm font-semibold transition-all ${
+                                selectedInDecade.length > 0
+                                  ? allDecadeSelected
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                              }`}
+                            >
+                              {decadeInt}s
+                            </button>
+                            
+                            {/* Individual Year Buttons - IMPROVED SIZING */}
+                            <div className="mt-2 grid grid-cols-5 gap-1">
+                              {decadeYears.map(year => (
+                                <button
+                                  key={year}
+                                  onClick={() => toggleFilter(year, selectedYears, setSelectedYears)}
+                                  className={`px-2 py-1 text-xs font-medium rounded border transition-all ${
+                                    selectedYears.includes(year)
+                                      ? 'bg-blue-500 text-white border-blue-500'
+                                      : 'bg-white text-blue-600 border-blue-200 hover:border-blue-400 hover:bg-blue-50'
+                                  }`}
+                                >
+                                  {year.toString().slice(-2)}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      });
+                  })()}
+                </div>
+              </div>
+            )}
+
+            {/* Singers Tab - VERTICAL LAYOUT */}
+            {activeFilterTab === 'singers' && (
+              <div>
+                <h3 className="text-sm font-medium text-blue-800 mb-3">Select Singers</h3>
+                <div className="space-y-2">
+                  {uniqueSingers.map(singer => (
+                    <FilterButton
+                      key={singer}
+                      active={selectedSingers.includes(singer)}
+                      onClick={() => toggleFilter(singer, selectedSingers, setSelectedSingers)}
+                    >
+                      {singer}
+                    </FilterButton>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Composers Tab - VERTICAL LAYOUT */}
+            {activeFilterTab === 'composers' && (
+              <div>
+                <h3 className="text-sm font-medium text-blue-800 mb-3">Select Composers</h3>
+                <div className="space-y-2">
+                  {uniqueComposers.map(composer => (
+                    <FilterButton
+                      key={composer}
+                      active={selectedComposers.includes(composer)}
+                      onClick={() => toggleFilter(composer, selectedComposers, setSelectedComposers)}
+                    >
+                      {composer}
+                    </FilterButton>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Lyricists Tab - VERTICAL LAYOUT */}
+            {activeFilterTab === 'lyricists' && (
+              <div>
+                <h3 className="text-sm font-medium text-blue-800 mb-3">Select Lyricists</h3>
+                <div className="space-y-2">
+                  {uniqueLyricists.map(lyricist => (
+                    <FilterButton
+                      key={lyricist}
+                      active={selectedLyricists.includes(lyricist)}
+                      onClick={() => toggleFilter(lyricist, selectedLyricists, setSelectedLyricists)}
+                    >
+                      {lyricist}
+                    </FilterButton>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Active Chart Filters Display */}
+            {(chartFilters.year || chartFilters.singer || chartFilters.composer || chartFilters.lyricist) && (
+              <div className="mt-6 pt-4 border-t border-blue-200">
+                <h3 className="text-sm font-medium text-blue-800 mb-2">Chart Filters</h3>
+                <div className="space-y-1 text-xs">
+                  {chartFilters.year && (
+                    <div className="flex items-center justify-between bg-blue-100 px-2 py-1 rounded">
+                      <span>Year: {chartFilters.year}</span>
+                      <button onClick={() => setChartFilters(prev => ({ ...prev, year: null }))} className="text-blue-600 hover:text-blue-800">×</button>
+                    </div>
+                  )}
+                  {chartFilters.singer && (
+                    <div className="flex items-center justify-between bg-blue-100 px-2 py-1 rounded">
+                      <span>Singer: {chartFilters.singer}</span>
+                      <button onClick={() => setChartFilters(prev => ({ ...prev, singer: null }))} className="text-blue-600 hover:text-blue-800">×</button>
+                    </div>
+                  )}
+                  {chartFilters.composer && (
+                    <div className="flex items-center justify-between bg-blue-100 px-2 py-1 rounded">
+                      <span>Composer: {chartFilters.composer}</span>
+                      <button onClick={() => setChartFilters(prev => ({ ...prev, composer: null }))} className="text-blue-600 hover:text-blue-800">×</button>
+                    </div>
+                  )}
+                  {chartFilters.lyricist && (
+                    <div className="flex items-center justify-between bg-blue-100 px-2 py-1 rounded">
+                      <span>Lyricist: {chartFilters.lyricist}</span>
+                      <button onClick={() => setChartFilters(prev => ({ ...prev, lyricist: null }))} className="text-blue-600 hover:text-blue-800">×</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Panel 2: Stunning Visualizations - FLEXIBLE WIDTH */}
+        <div className="flex-1 p-4 overflow-y-auto min-w-0">
+          <UltimateMusicArchaeology
+            filteredSongs={filteredSongs}
+            onYearClick={handleYearClick}
+            onSingerClick={handleSingerClick}
+            onComposerClick={handleComposerClick}
+            onLyricistClick={handleLyricistClick}
+            chartFilters={chartFilters}
+            resetTrigger={chartResetTrigger}
+          />
+        </div>
+
+       {/* Panel 3: Clean Player + Playlist Layout - FIXED WIDTH */}
+       <div className="bg-white border-l border-blue-200 flex flex-col" style={{ width: '300px', minWidth: '300px' }}>
+         {/* 1. PLAYER ON TOP */}
+         {currentSong && (
+           <div className="border-b border-blue-200">
+             <CleanYouTubePlayer
+               song={currentSong}
+               isPlaying={isPlaying}
+               onPlay={() => setIsPlaying(true)}
+               onPause={() => setIsPlaying(false)}
+               onNext={playNext}
+               onPrevious={playPrevious}
+               className="rounded-none border-0"
+             />
+           </div>
+         )}
+
+         {/* 2. LIGHT BLUE CONTROLS IN MIDDLE */}
+         <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
+           {/* Now Playing Info */}
+           {currentSong && (
+             <div className="mb-3">
+               <div className="text-xs text-blue-600 font-medium">NOW PLAYING</div>
+               <div className="text-sm font-medium text-blue-800 truncate">{currentSong.song}</div>
+               <div className="text-xs text-slate-600 truncate">{currentSong.movie} • {currentSong.singer}</div>
+             </div>
+           )}
+
+           {/* Audio Controls */}
+           <div className="flex items-center justify-center gap-3 mb-3">
+             <button 
+               onClick={() => setIsShuffled(!isShuffled)}
+               className={`p-2 rounded transition-colors ${isShuffled ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50'}`}
+               title="Shuffle"
+             >
+               <Shuffle className="w-4 h-4" />
+             </button>
+             
+             <button 
+               onClick={playPrevious}
+               className="p-2 bg-white text-blue-600 rounded hover:bg-blue-50 transition-colors"
+               disabled={currentPlaylist.length === 0}
+             >
+               <SkipBack className="w-4 h-4" />
+             </button>
+             
+             <button 
+               onClick={togglePlay}
+               className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-lg"
+               disabled={currentPlaylist.length === 0}
+             >
+               {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+             </button>
+             
+             <button 
+               onClick={playNext}
+               className="p-2 bg-white text-blue-600 rounded hover:bg-blue-50 transition-colors"
+               disabled={currentPlaylist.length === 0}
+             >
+               <SkipForward className="w-4 h-4" />
+             </button>
+           </div>
+
+           {/* Status */}
+           <div className="text-center">
+             <div className="text-xs text-slate-500">
+               📺 Auto-advancing playlist
+             </div>
+           </div>
+         </div>
+
+         {/* 3. PLAYLIST AT BOTTOM */}
+         <div className="flex-1 p-4 overflow-y-auto">
+           <h3 className="text-lg font-medium text-blue-800 mb-4">
+             Playlist ({currentPlaylist.length})
+           </h3>
+           <div className="space-y-2">
+             {currentPlaylist.map((song, index) => (
+               <div 
+                 key={song.id} 
+                 className={`p-3 border rounded cursor-pointer transition-all ${
+                   currentSong?.id === song.id 
+                     ? 'border-blue-500 bg-blue-50' 
+                     : 'border-blue-100 bg-blue-50/30 hover:bg-blue-50/50'
+                 }`}
+                 onClick={() => setCurrentSongIndex(index)}
+               >
+                 <div className="flex items-center gap-2">
+                   {currentSong?.id === song.id && isPlaying ? (
+                     <div className="w-3 h-3 bg-blue-600 rounded animate-pulse" />
+                   ) : (
+                     <div className="w-3 h-3 bg-slate-300 rounded" />
+                   )}
+                   <div className="flex-1 min-w-0">
+                     <h4 className="font-medium text-blue-800 text-sm truncate">{song.song}</h4>
+                     <p className="text-xs text-slate-600 truncate">{song.movie} ({song.year})</p>
+                     <div className="text-xs text-slate-500 space-y-0.5">
+                       <p><span className="font-medium">Composer:</span> {song.composer}</p>
+                       <p><span className="font-medium">Singer:</span> {song.singer}</p>
+                       <p><span className="font-medium">Lyricist:</span> {song.lyricist}</p>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             ))}
+           </div>
+         </div>
+       </div>
+     </div>
           <div className="p-4 border-b border-blue-200">
             {/* Reset Button - RENAMED */}
             <button
