@@ -558,57 +558,49 @@ const UltimateMusicArchaeology = ({
     }
   }, [filteredArtists, activeTab, zoomLevel, highlightedArtist]);
 
-  return (
+return (
     <div className="h-full flex flex-col">
-      {/* Timeline with Vertical Tab Navigation */}
+      {/* Full-width Timeline */}
       <div className="bg-white rounded-lg p-3 mb-3 shadow-sm border">
-        <div className="flex gap-4">
-          {/* Timeline Section */}
-          <div className="flex-1">
-            <div className="text-sm text-gray-600 mb-2">
-              🕒 <strong>{selectedYearRange[0]} - {selectedYearRange[1]}</strong>
-              {selectedYearRange[0] !== 1960 || selectedYearRange[1] !== 2024 ? (
-                <span className="ml-2 text-blue-600">
-                  ({selectedYearRange[1] - selectedYearRange[0] + 1} years)
-                </span>
-              ) : (
-                <span className="ml-2 text-green-600">(All years)</span>
-              )}
-            </div>
-            <div ref={timelineRef}></div>
-          </div>
-          
-          {/* Vertical Tab Navigation - ADDED SUNBURST TAB */}
-          <div className="w-48 flex flex-col gap-2">
-            {[
-              { key: 'sunburst', label: '🌞 Sunburst', icon: Sun, count: filteredSongs.length },
-              { key: 'collaborations', label: '🤝 Collaborations', icon: Users, count: filteredArtists.collaborations.length },
-              { key: 'singers', label: '🎤 Singers', icon: Mic, count: filteredArtists.singers.length },
-              { key: 'composers', label: '🎼 Composers', icon: Music, count: filteredArtists.composers.length },
-              { key: 'lyricists', label: '✍️ Lyricists', icon: PenTool, count: filteredArtists.lyricists.length }
-            ].map(({ key, label, icon: Icon, count }) => (
-              <button
-                key={key}
-                onClick={() => setActiveTab(key)}
-                className={`flex items-center justify-between p-3 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === key
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-800'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <Icon className="w-4 h-4" />
-                  <span>{label}</span>
-                </div>
-                <div className={`text-lg font-bold ${activeTab === key ? 'text-white' : 'text-blue-600'}`}>
-                  {count}
-                </div>
-              </button>
-            ))}
-          </div>
+        <div className="text-sm text-gray-600 mb-2">
+          🕒 <strong>{selectedYearRange[0]} - {selectedYearRange[1]}</strong>
+          {selectedYearRange[0] !== 1960 || selectedYearRange[1] !== 2024 ? (
+            <span className="ml-2 text-blue-600">
+              ({selectedYearRange[1] - selectedYearRange[0] + 1} years)
+            </span>
+          ) : (
+            <span className="ml-2 text-green-600">(All years)</span>
+          )}
+        </div>
+        <div ref={timelineRef}></div>
+        
+        {/* Horizontal Tab Navigation */}
+        <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+          {[
+            { key: 'collaborations', label: '🤝 Collaborations', icon: Users, count: filteredArtists.collaborations.length },
+            { key: 'singers', label: '🎤 Singers', icon: Mic, count: filteredArtists.singers.length },
+            { key: 'composers', label: '🎼 Composers', icon: Music, count: filteredArtists.composers.length },
+            { key: 'lyricists', label: '✍️ Lyricists', icon: PenTool, count: filteredArtists.lyricists.length }
+          ].map(({ key, label, icon: Icon, count }) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                activeTab === key
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-800'
+              }`}
+            >
+              <Icon className="w-3 h-3" />
+              <span>{label}</span>
+              <div className={`text-sm font-bold ${activeTab === key ? 'text-white' : 'text-blue-600'}`}>
+                {count}
+              </div>
+            </button>
+          ))}
         </div>
       </div>
-
+  
       {/* Main Visualization */}
       <div className="flex-1 bg-white rounded-lg border border-gray-200 p-4">
         {/* Render Enhanced Sunburst when sunburst tab is active */}
