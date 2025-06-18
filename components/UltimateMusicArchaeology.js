@@ -623,7 +623,7 @@ return (
                 {activeTab === 'lyricists' && `✍️ ${filteredArtists.lyricists.length} Lyricists`}
               </h3>
               
-              {/* Zoom Controls */}
+              {/* Tips in Heading */}
               <div className="flex items-center gap-4">
                 <div className="text-sm text-gray-500">
                   {activeTab === 'collaborations' 
@@ -648,7 +648,7 @@ return (
               </div>
             </div>
             
-            <div className="h-96 w-full overflow-hidden rounded-lg border">
+            <div className="h-96 w-full overflow-auto rounded-lg border">
               <div ref={svgRef}></div>
             </div>
           </>
