@@ -144,14 +144,15 @@ const UltimateMusicArchaeology = ({
   // Draw timeline
   useEffect(() => {
     if (!timelineRef.current || !timelineData) return;
-
+    
     const container = d3.select(timelineRef.current);
     container.selectAll("*").remove();
-
-    const width = 400;
+    
+    const containerWidth = timelineRef.current.clientWidth;
+    const width = containerWidth - margin.left - margin.right;
     const height = 80;
     const margin = { top: 10, right: 20, bottom: 30, left: 20 };
-
+        
     const svg = container
       .append("svg")
       .attr("width", width)
