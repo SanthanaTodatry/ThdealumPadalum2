@@ -360,19 +360,19 @@ const TamilSongsVisualization = () => {
       {/* Header with Timeline and Search */}
       <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-6 py-4 shadow-lg">
         <div className="flex items-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent drop-shadow-lg animate-pulse whitespace-nowrap">
-            தேடலும் பாடலும்
-          </h1>
+          {/* Title with fixed width */}
+          <div style={{ width: '300px' }}>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent drop-shadow-lg animate-pulse whitespace-nowrap">
+              தேடலும் பாடலும்
+            </h1>
+          </div>
           
-          {/* Spacer to match Panel 1 width (300px + borders) */}
-          <div style={{ width: '300px' }}></div>
-          
-          {/* Timeline matches middle panel exactly */}
-          <div className="flex-1 mx-4">
+          {/* Timeline with EXACT middle panel width - no flex-1, no margins */}
+          <div style={{ width: 'calc(100vw - 300px - 320px - 48px)' }}>
             <div ref={timelineRef} className="timeline-header"></div>
           </div>
           
-          {/* Spacer to match Panel 3 width (320px) */}
+          {/* Search panel with fixed width */}
           <div style={{ width: '320px' }} className="flex justify-end">
             <div className="w-80">
               <div className="relative">
