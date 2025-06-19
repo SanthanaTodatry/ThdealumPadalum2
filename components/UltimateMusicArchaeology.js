@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 import { ZoomIn, ZoomOut, Users, Music, Mic, PenTool, Sun } from 'lucide-react';
-import EnhancedSunburstChart from './EnhancedSunburstChart';
+import CleanYouTubePlayer from './CleanYouTubePlayer';
 
 const UltimateMusicArchaeology = ({ 
   filteredSongs, 
@@ -10,7 +10,13 @@ const UltimateMusicArchaeology = ({
   onComposerClick,
   onLyricistClick,
   chartFilters,
-  resetTrigger = 0
+  resetTrigger = 0,
+  currentSong,
+  isPlaying,
+  onPlay,
+  onPause,
+  onNext,
+  onPrevious
 }) => {
   const [activeTab, setActiveTab] = useState('collaborations');
   const [selectedYearRange, setSelectedYearRange] = useState([1960, 2024]);
@@ -561,27 +567,17 @@ const UltimateMusicArchaeology = ({
 
   return (
     <div className="h-full flex flex-col">
-      {/* Full-width Timeline */}
-      <div className="bg-white rounded-lg p-3 mb-3 shadow-sm border">
-        <div className="text-sm text-gray-600 mb-2">
-          🕒 <strong>{selectedYearRange[0]} - {selectedYearRange[1]}</strong>
-          {selectedYearRange[0] !== 1960 || selectedYearRange[1] !== 2024 ? (
-            <span className="ml-2 text-blue-600">
-              ({selectedYearRange[1] - selectedYearRange[0] + 1} years)
-            </span>
-          ) : (
-            <span className="ml-2 text-green-600">(All years)</span>
-          )}
-        </div>
-        <div ref={timelineRef}></div>
-        
-        {/* Horizontal Tab Navigation */}
-        <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+
+    {/* Navigation Buttons Only */}
+    <div className="bg-white rounded-lg p-3 mb-3 shadow-sm border">        
+      {/* Horizontal Tab Navigation */}
+      <div className="flex gap-2">
           {[
             { key: 'collaborations', label: '🤝 Collaborations', icon: Users, count: filteredArtists.collaborations.length },
             { key: 'singers', label: '🎤 Singers', icon: Mic, count: filteredArtists.singers.length },
             { key: 'composers', label: '🎼 Composers', icon: Music, count: filteredArtists.composers.length },
-            { key: 'lyricists', label: '✍️ Lyricists', icon: PenTool, count: filteredArtists.lyricists.length }
+            { key: 'lyricists', label: '✍️ Lyricists', icon: PenTool, count: filteredArtists.lyricists.length },
+            { key: 'video', label: '📺 Video', icon: () => <span>📺</span>, count: '' }
           ].map(({ key, label, icon: Icon, count }) => (
             <button
               key={key}
@@ -610,18 +606,44 @@ const UltimateMusicArchaeology = ({
             {activeTab === 'singers' && `🎤 ${filteredArtists.singers.length} Singers`}
             {activeTab === 'composers' && `🎼 ${filteredArtists.composers.length} Composers`}
             {activeTab === 'lyricists' && `✍️ ${filteredArtists.lyricists.length} Lyricists`}
+            {activeTab === 'video' && `📺 Video Player`}
           </h3>
           
           <div className="text-sm text-gray-500">
             {activeTab === 'collaborations' 
               ? 'Hover for details • Click to filter/unfilter'
+              : activeTab === 'video'
+              ? 'Video Player for Current Song'
               : 'Circle size = activity • Hover for details • Click to filter/unfilter'
             }
           </div>
         </div>
         
         <div className="h-96 w-full overflow-y-auto rounded-lg border">
-          <div ref={svgRef}></div>
+          {activeTab === 'video' ? (
+            <div className="h-full w-full">
+              {currentSong ? (
+                <CleanYouTubePlayer
+                  song={currentSong}
+                  isPlaying={isPlaying}
+                  onPlay={onPlay}
+                  onPause={onPause}
+                  onNext={onNext}
+                  onPrevious={onPrevious}
+                  className="h-full w-full"
+                />
+              ) : (
+                <div className="h-full flex items-center justify-center bg-gray-100 text-gray-600">
+                  <div className="text-center">
+                    <div className="text-4xl mb-4">🎵</div>
+                    <div>Select a song to watch video</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div ref={svgRef}></div>
+         )}
         </div>
       </div>
     </div>
