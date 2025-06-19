@@ -196,9 +196,9 @@ const TamilSongsVisualization = () => {
   
     const svg = container
       .append("svg")
-      .attr("width", width   margin.left   margin.right)
-      .attr("height", height   margin.top   margin.bottom);
-  
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
+
     const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
   
