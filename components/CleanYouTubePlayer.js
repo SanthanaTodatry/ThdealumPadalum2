@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import YouTube from 'react-youtube';
 
 const CleanYouTubePlayer = ({ 
   song, 
@@ -16,12 +17,14 @@ const CleanYouTubePlayer = ({
 
   const YOUTUBE_API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
 
-  // Search for video when song changes
+  // Reset video when song changes
   useEffect(() => {
-    if (song && !videoId) {
+    if (song) {
+      setVideoId(null);
+      setError(null);
       searchForVideo(song);
     }
-  }, [song]);
+  }, [song?.id]); // Track by song ID
 
   // Auto-advance when playing state changes
   useEffect(() => {
@@ -39,7 +42,11 @@ const CleanYouTubePlayer = ({
     setError(null);
     
     try {
-      const query = `${song.song} ${song.movie} ${song.singer}`;
+      if (!YOUTUBE_API_KEY) {
+        throw new Error('YouTube API key not configured');
+      }
+
+      const query = `${song.song} ${song.movie} ${song.singer} tamil song`;
       const response = await fetch(
         `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&key=${YOUTUBE_API_KEY}`
       );
@@ -69,13 +76,12 @@ const CleanYouTubePlayer = ({
     height: '100%',
     playerVars: {
       autoplay: 0,
-      controls: 0,
+      controls: 1, // Enable controls for better UX
       rel: 0,
       modestbranding: 1,
-      fs: 0,
+      fs: 1, // Allow fullscreen
       iv_load_policy: 3,
       showinfo: 0,
-      disablekb: 1,
     },
   };
 
@@ -99,8 +105,9 @@ const CleanYouTubePlayer = ({
     return (
       <div className="h-full flex items-center justify-center bg-gray-900 text-white">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p>🔍 Finding video...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-lg">🔍 Finding video...</p>
+          <p className="text-sm text-gray-400 mt-2">{song.song}</p>
         </div>
       </div>
     );
@@ -110,12 +117,18 @@ const CleanYouTubePlayer = ({
   if (error && !videoId) {
     return (
       <div className="h-full flex items-center justify-center bg-gray-900 text-white">
-        <div className="text-center">
-          <p className="font-medium mb-2">Video not found</p>
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">❌</div>
+          <p className="font-medium mb-2 text-lg">Video not found</p>
           <p className="text-sm text-gray-400 mb-4">{error}</p>
+          <div className="mb-4 p-3 bg-gray-800 rounded">
+            <p className="text-sm"><strong>Song:</strong> {song.song}</p>
+            <p className="text-sm"><strong>Movie:</strong> {song.movie}</p>
+            <p className="text-sm"><strong>Singer:</strong> {song.singer}</p>
+          </div>
           <button
             onClick={() => searchForVideo(song)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             🔄 Try Again
           </button>
@@ -125,16 +138,43 @@ const CleanYouTubePlayer = ({
   }
 
   return (
-    <div className="h-full w-full bg-black">
-      {videoId && (
+    <div className="h-full w-full bg-black rounded-lg overflow-hidden">
+      {videoId ? (
         <div className="relative h-full w-full">
-          {/* Note: You'll need to add react-youtube and implement the actual YouTube component */}
-          <div className="h-full flex items-center justify-center text-white">
-            <div className="text-center">
-              <div className="text-2xl mb-2">📺 Video Ready</div>
-              <div className="text-lg">{song.song}</div>
-              <div className="text-sm text-gray-400">Video ID: {videoId}</div>
+          {/* Placeholder for react-youtube - shows video info until implemented */}
+          <div className="h-full flex flex-col items-center justify-center text-white bg-gradient-to-br from-gray-900 to-black">
+            <div className="text-center max-w-lg p-8">
+              <div className="text-6xl mb-6">📺</div>
+              <h2 className="text-2xl font-bold mb-2">{song.song}</h2>
+              <p className="text-lg text-gray-300 mb-1">{song.movie} ({song.year})</p>
+              <p className="text-md text-gray-400 mb-6">{song.singer}</p>
+              
+              <div className="bg-green-600 text-white px-4 py-2 rounded-lg mb-4">
+                ✅ Video Found: {videoId}
+              </div>
+              
+              <div className="text-sm text-gray-500 bg-gray-800 p-3 rounded">
+                <p><strong>Next Step:</strong> Install react-youtube</p>
+                <p><code>npm install react-youtube</code></p>
+                <p className="mt-2">Then replace this placeholder with:</p>
+                <p><code>&lt;YouTube videoId={videoId} opts={opts} /&gt;</code></p>
+              </div>
             </div>
+          </div>
+          
+          <YouTube
+            videoId={videoId}
+            opts={opts}
+            onReady={onReady}
+            onStateChange={onStateChange}
+            className="h-full w-full"
+          />
+        </div>
+      ) : (
+        <div className="h-full flex items-center justify-center text-white">
+          <div className="text-center">
+            <div className="text-4xl mb-4">🎵</div>
+            <div>Preparing video...</div>
           </div>
         </div>
       )}
