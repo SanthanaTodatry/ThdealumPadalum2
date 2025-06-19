@@ -58,13 +58,10 @@ const TamilSongsVisualization = () => {
       lyricist: null,
       yearRange: null
     });
-    setChartResetTrigger(prev => prev + 1);
-  };
-    
     // Trigger chart reset
     setChartResetTrigger(prev => prev + 1);
   };
-
+    
   // Get unique values
   const uniqueYears = [...new Set(songsData.map(song => song.year))].sort();
   const uniqueComposers = [...new Set(songsData.map(song => song.composer))].sort();
