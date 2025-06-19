@@ -373,10 +373,11 @@ const TamilSongsVisualization = () => {
           </div>
           
           {/* Search panel with fixed width */}
-          <div style={{ width: '320px' }} className="flex justify-end pr-4">
-            <div className="w-72"> {/* Changed from w-80 to w-72 (288px) */}
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
+
+          <div style={{ width: '320px' }} className="flex justify-end">
+            <div style={{ width: '288px' }}>
+              <div className="relative flex items-center">
+                <Search className="absolute left-4 text-white/70 w-5 h-5" />
                 <input
                   type="text"
                   value={searchTerm}
