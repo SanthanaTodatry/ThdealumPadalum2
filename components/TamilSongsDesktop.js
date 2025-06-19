@@ -360,10 +360,15 @@ const TamilSongsVisualization = () => {
       {/* Header with Timeline and Search */}
       <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-6 py-4 shadow-lg">
         <div className="flex items-center">
+    
           {/* Title with fixed width */}
           <div style={{ width: '300px' }}>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent drop-shadow-lg animate-pulse whitespace-nowrap">
-              தேடலும் பாடலும்
+            <h1 className="text-3xl font-black bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent whitespace-nowrap animate-pulse" 
+            style={{ 
+              textShadow: '0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.6)',
+              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+            }}>
+            தேடலும் பாடலும்
             </h1>
           </div>
           
