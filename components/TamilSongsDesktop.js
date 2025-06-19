@@ -362,7 +362,6 @@ const TamilSongsVisualization = () => {
         <div className="flex items-center">
     
           {/* Title with fixed width */}
-
           <div style={{ width: '300px' }}>
             <h1 className="text-xl md:text-2xl font-black bg-gradient-to-r from-yellow-200 via-white to-yellow-200 bg-clip-text text-transparent drop-shadow-2xl animate-pulse whitespace-nowrap">
               தேடலும் பாடலும்
@@ -375,7 +374,6 @@ const TamilSongsVisualization = () => {
           </div>
           
           {/* Search panel with fixed width */}
-
           <div style={{ width: '320px' }} className="flex justify-end">
             <div style={{ width: '288px' }}>
               <div className="relative flex items-center">
@@ -394,6 +392,7 @@ const TamilSongsVisualization = () => {
       </div>
               
       <div className="flex flex-1 overflow-hidden">
+                    
         {/* Panel 1: Filters */}
         <div className="bg-white border-r border-blue-200 flex flex-col" style={{ width: '300px', minWidth: '300px' }}>                
           <div className="p-4 border-b border-blue-200">
