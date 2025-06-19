@@ -656,9 +656,9 @@ const UltimateMusicArchaeology = ({
               )}
             </div>
           ) : (
-            <div ref={svgRef}></div>
+            <div ref={svgRef} style={{ display: activeTab === 'video' ? 'none' : 'block' }}></div>
           )}
-        </div>
+        </div>           
       </div>
     </div>
   );
