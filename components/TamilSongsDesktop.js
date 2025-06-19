@@ -256,51 +256,74 @@ const TamilSongsVisualization = () => {
       .on("click", function(event, d) {
         handleYearClick({ activePayload: [{ payload: { year: d.year } }] });
       });
-  
-    // Add brush for year range selection
-    const brush = d3.brushX()
-      .extent([[0, 0], [width, height]])
-      .on("brush end", function(event) {
-        if (event.selection) {
-          const [x0, x1] = event.selection;
-          const year0 = Math.round(xScale.invert(x0));
-          const year1 = Math.round(xScale.invert(x1));
-          
-          // Update chart filters for year range
-          if (year0 === year1) {
-            // Single year selected
-            handleYearClick({ activePayload: [{ payload: { year: year0 } }] });
+
+      // Add brush for year range selection
+      const brush = d3.brushX()
+        .extent([[0, 0], [width, height]])
+        .on("start brush", function(event) {
+          // Show selection rectangle during brushing
+          if (event.selection) {
+            const [x0, x1] = event.selection;
+            const year0 = Math.round(xScale.invert(x0));
+            const year1 = Math.round(xScale.invert(x1));
+            
+            // Optional: Show years in selection during brush
+            // console.log(`Selecting: ${year0} - ${year1}`);
+          }
+        })
+        .on("end", function(event) {
+          if (event.selection) {
+            const [x0, x1] = event.selection;
+            const year0 = Math.round(xScale.invert(x0));
+            const year1 = Math.round(xScale.invert(x1));
+            
+            // Update chart filters for year range
+            if (year0 === year1) {
+              // Single year selected
+              handleYearClick({ activePayload: [{ payload: { year: year0 } }] });
+            } else {
+              // Year range selected - create custom filter
+              setChartFilters(prev => ({ 
+                ...prev, 
+                year: null, // Clear single year
+                yearRange: [year0, year1] // Add year range
+              }));
+            }
+            
+            // Keep the selection visible for a moment, then clear
+            setTimeout(() => {
+              g.select(".brush").call(brush.move, null);
+            }, 500);
           } else {
-            // Year range selected - create custom filter
+            // Clear selection
             setChartFilters(prev => ({ 
               ...prev, 
-              year: null, // Clear single year
-              yearRange: [year0, year1] // Add year range
+              year: null,
+              yearRange: null
             }));
           }
-        } else {
-          // Clear selection
-          setChartFilters(prev => ({ 
-            ...prev, 
-            year: null,
-            yearRange: null
-          }));
-        }
-      });
-  
-    // Add brush to timeline
-    g.append("g")
-      .attr("class", "brush")
-      .call(brush);
-  
-    // Style brush
-    g.selectAll(".brush .overlay")
-      .style("fill", "rgba(255,255,255,0.1)");
+        });
       
-    g.selectAll(".brush .selection")
-      .style("fill", "rgba(255,255,255,0.3)")
-      .style("stroke", "white")
-      .style("stroke-width", 1);
+      // Add brush to timeline
+      const brushGroup = g.append("g")
+        .attr("class", "brush")
+        .call(brush);
+      
+      // Style brush selection rectangle (NOT zoom effect)
+      brushGroup.selectAll(".overlay")
+        .style("fill", "rgba(255,255,255,0.1)")
+        .style("cursor", "crosshair");
+        
+      brushGroup.selectAll(".selection")
+        .style("fill", "rgba(255,255,255,0.2)")
+        .style("stroke", "white")
+        .style("stroke-width", 2)
+        .style("stroke-dasharray", "3,3");
+      
+      brushGroup.selectAll(".handle")
+        .style("fill", "white")
+        .style("stroke", "rgba(255,255,255,0.8)")
+        .style("stroke-width", 1);
   
     // Add simple x-axis with fewer ticks
     const xAxis = d3.axisBottom(xScale)
