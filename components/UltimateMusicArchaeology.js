@@ -589,8 +589,7 @@ const UltimateMusicArchaeology = ({
       </div>
 
       {/* Main Visualization */}
-      <div className="flex-1 bg-white rounded-lg border border-gray-200 p-4">
-
+      <div className="flex-1 bg-white rounded-lg border border-gray-200 p-2"> {/* Reduced padding from p-4 to p-2 */}
             {/* Horizontal Tab Navigation */}
             <div className="flex gap-2">
               {[
@@ -621,7 +620,7 @@ const UltimateMusicArchaeology = ({
                 </button>
               ))}
         </div>
-        
+
         <div className="h-96 w-full overflow-y-auto rounded-lg border">
           {activeTab === 'video' ? (
             <div className="h-full w-full">
@@ -647,8 +646,9 @@ const UltimateMusicArchaeology = ({
           ) : (
             <div ref={svgRef} style={{ display: activeTab === 'video' ? 'none' : 'block' }}></div>
           )}
-        </div>           
+        </div>
       </div>
+           
     </div>
   );
 };
