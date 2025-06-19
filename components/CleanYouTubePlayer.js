@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import YouTube from 'react-youtube';
 
 const CleanYouTubePlayer = ({ 
   song, 
@@ -24,7 +23,7 @@ const CleanYouTubePlayer = ({
       setError(null);
       searchForVideo(song);
     }
-  }, [song?.id]); // Track by song ID
+  }, [song?.id]);
 
   // Auto-advance when playing state changes
   useEffect(() => {
@@ -70,36 +69,6 @@ const CleanYouTubePlayer = ({
     setIsLoading(false);
   };
 
-  // YouTube player options for large display
-  const opts = {
-    width: '100%',
-    height: '100%',
-    playerVars: {
-      autoplay: 0,
-      controls: 1, // Enable controls for better UX
-      rel: 0,
-      modestbranding: 1,
-      fs: 1, // Allow fullscreen
-      iv_load_policy: 3,
-      showinfo: 0,
-    },
-  };
-
-  // Handle player events
-  const onReady = (event) => {
-    setPlayer(event.target);
-  };
-
-  const onStateChange = (event) => {
-    if (event.data === 1) {
-      onPlay && onPlay();
-    } else if (event.data === 2) {
-      onPause && onPause();
-    } else if (event.data === 0) {
-      onNext && onNext();
-    }
-  };
-
   // Loading state
   if (isLoading) {
     return (
@@ -141,7 +110,6 @@ const CleanYouTubePlayer = ({
     <div className="h-full w-full bg-black rounded-lg overflow-hidden">
       {videoId ? (
         <div className="relative h-full w-full">
-          {/* Placeholder for react-youtube - shows video info until implemented */}
           <div className="h-full flex flex-col items-center justify-center text-white bg-gradient-to-br from-gray-900 to-black">
             <div className="text-center max-w-lg p-8">
               <div className="text-6xl mb-6">📺</div>
@@ -156,19 +124,9 @@ const CleanYouTubePlayer = ({
               <div className="text-sm text-gray-500 bg-gray-800 p-3 rounded">
                 <p><strong>Next Step:</strong> Install react-youtube</p>
                 <p><code>npm install react-youtube</code></p>
-                <p className="mt-2">Then replace this placeholder with:</p>
-                <p><code>&lt;YouTube videoId={videoId} opts={opts} /&gt;</code></p>
               </div>
             </div>
           </div>
-          
-          <YouTube
-            videoId={videoId}
-            opts={opts}
-            onReady={onReady}
-            onStateChange={onStateChange}
-            className="h-full w-full"
-          />
         </div>
       ) : (
         <div className="h-full flex items-center justify-center text-white">
