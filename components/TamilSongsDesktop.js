@@ -285,17 +285,17 @@ const TamilSongsVisualization = () => {
     <div className="flex flex-col h-screen bg-slate-50 font-light text-slate-700">
       {/* Header with Timeline and Search */}
       <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-6 py-4 shadow-lg">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent drop-shadow-lg animate-pulse whitespace-nowrap">
             தேடலும் பாடலும்
           </h1>
           
-          {/* Timeline in header */}
-          <div className="flex-1 mx-4">
+          {/* Timeline matches middle panel width */}
+          <div className="flex-1">
             <div ref={timelineRef} className="timeline-header"></div>
           </div>
           
-          {/* Search on the right */}
+          {/* Search adjusts to available space */}
           <div className="w-80">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
@@ -309,8 +309,8 @@ const TamilSongsVisualization = () => {
             </div>
           </div>
         </div>
-      </div>
-      
+      </div>      
+                  
       <div className="flex flex-1 overflow-hidden">
         {/* Panel 1: Filters */}
         <div className="bg-white border-r border-blue-200 flex flex-col" style={{ width: '300px', minWidth: '300px' }}>                
