@@ -1,160 +1,11 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, Legend, ResponsiveContainer } from 'recharts';
 import { Search, RotateCcw, Play, Pause, SkipForward, SkipBack, Shuffle, Repeat } from 'lucide-react';
-import YouTube from 'react-youtube';
+import * as d3 from 'd3';
 import { tamilSongsData } from './tamilSongsData';
 import UltimateMusicArchaeology from './UltimateMusicArchaeology';
 
-const CleanYouTubePlayer = ({ 
-  song, 
-  isPlaying, 
-  onPlay, 
-  onPause, 
-  onNext, 
-  onPrevious,
-  className = ""
-}) => {
-  const [videoId, setVideoId] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [player, setPlayer] = useState(null);
-
-  const YOUTUBE_API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
-
-  // Search for video when song changes
-  useEffect(() => {
-    if (song && !videoId) {
-      searchForVideo(song);
-    }
-  }, [song]);
-
-  // Auto-advance when playing state changes
-  useEffect(() => {
-    if (player && videoId) {
-      if (isPlaying) {
-        player.playVideo();
-      } else {
-        player.pauseVideo();
-      }
-    }
-  }, [isPlaying, player, videoId]);
-
-  const searchForVideo = async (song) => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const query = `${song.song} ${song.movie} ${song.singer}`;
-      const response = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&key=${YOUTUBE_API_KEY}`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to search YouTube');
-      }
-      
-      const data = await response.json();
-      
-      if (data.items && data.items.length > 0) {
-        setVideoId(data.items[0].id.videoId);
-      } else {
-        throw new Error('No videos found');
-      }
-    } catch (error) {
-      console.error('YouTube search error:', error);
-      setError(error.message);
-    }
-    
-    setIsLoading(false);
-  };
-
-  // YouTube player options - REMOVED controls and info to clean it up
-  const opts = {
-    width: '100%',
-    height: '240',
-    playerVars: {
-      autoplay: 0,
-      controls: 0, // Hide YouTube controls
-      rel: 0,
-      modestbranding: 1,
-      fs: 0, // Disable fullscreen
-      iv_load_policy: 3, // Hide annotations
-      showinfo: 0, // Hide video info
-      disablekb: 1, // Disable keyboard controls
-    },
-  };
-
-  // Handle player events
-  const onReady = (event) => {
-    setPlayer(event.target);
-  };
-
-  const onStateChange = (event) => {
-    // YouTube player states: 0 (ended), 1 (playing), 2 (paused)
-    if (event.data === 1) {
-      onPlay && onPlay();
-    } else if (event.data === 2) {
-      onPause && onPause();
-    } else if (event.data === 0) {
-      // Video ended, auto-advance to next
-      onNext && onNext();
-    }
-  };
-
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className={`bg-white rounded-lg border ${className}`}>
-        <div className="h-60 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">🔍 Finding video...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (error && !videoId) {
-    return (
-      <div className={`bg-white rounded-lg border ${className}`}>
-        <div className="h-60 flex items-center justify-center">
-          <div className="text-center text-red-500">
-            <p className="font-medium">Video not found</p>
-            <p className="text-sm text-gray-600 mt-1">{error}</p>
-            <button
-              onClick={() => searchForVideo(song)}
-              className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              🔄 Try Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={`bg-white rounded-lg border ${className}`}>
-      {/* Clean YouTube Player - No extra controls */}
-      {videoId && (
-        <div className="relative">
-          <YouTube
-            videoId={videoId}
-            opts={opts}
-            onReady={onReady}
-            onStateChange={onStateChange}
-            className="youtube-player"
-          />
-        </div>
-      )}
-    </div>
-  );
-};
-
 const TamilSongsVisualization = () => {
-
   // Mock data
   const songsData = tamilSongsData;
 
@@ -181,95 +32,7 @@ const TamilSongsVisualization = () => {
   
   // Timeline ref for header
   const timelineRef = useRef();
-  
-  // Draw compact timeline in header
-  useEffect(() => {
-    if (!timelineRef.current || !yearData.length) return;
-  
-    const container = d3.select(timelineRef.current);
-    container.selectAll("*").remove();
-  
-    const margin = { top: 5, right: 10, bottom: 15, left: 10 };
-    const containerWidth = timelineRef.current.clientWidth;
-    const width = containerWidth - margin.left - margin.right;
-    const height = 40; // Compact height for header
-  
-    const svg = container
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom);
 
-    const g = svg.append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
-  
-    // Scales
-    const xScale = d3.scaleLinear()
-      .domain(d3.extent(yearData, d => d.year))
-      .range([0, width]);
-  
-    const yScale = d3.scaleLinear()
-      .domain([0, d3.max(yearData, d => d.count)])
-      .range([height, 0]);
-  
-    // Area generator
-    const area = d3.area()
-      .x(d => xScale(d.year))
-      .y0(height)
-      .y1(d => yScale(d.count))
-      .curve(d3.curveCardinal);
-  
-    // Add area with white fill for header
-    g.append("path")
-      .datum(yearData)
-      .attr("fill", "rgba(255,255,255,0.3)")
-      .attr("d", area);
-  
-    // Add line
-    const line = d3.line()
-      .x(d => xScale(d.year))
-      .y(d => yScale(d.count))
-      .curve(d3.curveCardinal);
-  
-    g.append("path")
-      .datum(yearData)
-      .attr("fill", "none")
-      .attr("stroke", "white")
-      .attr("stroke-width", 2)
-      .attr("d", line);
-  
-    // Add interactive dots
-    g.selectAll(".header-dot")
-      .data(yearData)
-      .enter()
-      .append("circle")
-      .attr("class", "header-dot")
-      .attr("cx", d => xScale(d.year))
-      .attr("cy", d => yScale(d.count))
-      .attr("r", 2)
-      .attr("fill", "white")
-      .attr("stroke", "rgba(255,255,255,0.5)")
-      .style("cursor", "pointer")
-      .on("click", function(event, d) {
-        handleYearClick({ activePayload: [{ payload: { year: d.year } }] });
-      });
-  
-    // Add simple x-axis with fewer ticks
-    const xAxis = d3.axisBottom(xScale)
-      .tickFormat(d3.format("d"))
-      .ticks(5);
-  
-    g.append("g")
-      .attr("transform", `translate(0,${height})`)
-      .call(xAxis)
-      .selectAll("text")
-      .style("fill", "white")
-      .style("font-size", "10px");
-  
-    g.selectAll(".domain, .tick line")
-      .style("stroke", "rgba(255,255,255,0.5)");
-  
-  }, [yearData]);
-  
   // Filter functions
   const toggleFilter = (item, selectedItems, setSelectedItems) => {
     if (selectedItems.includes(item)) {
@@ -344,39 +107,6 @@ const TamilSongsVisualization = () => {
       .sort((a, b) => a.year - b.year);
   }, [filteredSongs]);
 
-  const singerData = useMemo(() => {
-    const singerCounts = {};
-    filteredSongs.forEach(song => {
-      singerCounts[song.singer] = (singerCounts[song.singer] || 0) + 1;
-    });
-    return Object.entries(singerCounts)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 8);
-  }, [filteredSongs]);
-
-  const composerData = useMemo(() => {
-    const composerCounts = {};
-    filteredSongs.forEach(song => {
-      composerCounts[song.composer] = (composerCounts[song.composer] || 0) + 1;
-    });
-    return Object.entries(composerCounts)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 8);
-  }, [filteredSongs]);
-
-  const lyricistData = useMemo(() => {
-    const lyricistCounts = {};
-    filteredSongs.forEach(song => {
-      lyricistCounts[song.lyricist] = (lyricistCounts[song.lyricist] || 0) + 1;
-    });
-    return Object.entries(lyricistCounts)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 8);
-  }, [filteredSongs]);
-
   // Chart click handlers - now they refresh the playlist
   const handleYearClick = (data) => {
     if (data && data.activePayload && data.activePayload[0]) {
@@ -406,30 +136,6 @@ const TamilSongsVisualization = () => {
 
   const handleLyricistClick = (data) => {
     const lyricist = data?.name;
-    setChartFilters(prev => ({ 
-      ...prev, 
-      lyricist: prev.lyricist === lyricist ? null : lyricist 
-    }));
-  };
-
-  const handleSingerLegendClick = (data) => {
-    const singer = data?.value;
-    setChartFilters(prev => ({ 
-      ...prev, 
-      singer: prev.singer === singer ? null : singer 
-    }));
-  };
-
-  const handleComposerLegendClick = (data) => {
-    const composer = data?.value;
-    setChartFilters(prev => ({ 
-      ...prev, 
-      composer: prev.composer === composer ? null : composer 
-    }));
-  };
-
-  const handleLyricistLegendClick = (data) => {
-    const lyricist = data?.value;
     setChartFilters(prev => ({ 
       ...prev, 
       lyricist: prev.lyricist === lyricist ? null : lyricist 
@@ -474,9 +180,93 @@ const TamilSongsVisualization = () => {
     }
   }, [currentPlaylist.length, currentSongIndex]);
 
-  const SINGER_COLORS = ['#7c3aed', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe', '#6d28d9', '#7c2d12'];
-  const COMPOSER_COLORS = ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5', '#047857', '#065f46'];
-  const LYRICIST_COLORS = ['#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fecaca', '#fee2e2', '#b91c1c', '#991b1b'];
+  // Draw compact timeline in header
+  useEffect(() => {
+    if (!timelineRef.current || !yearData.length) return;
+
+    const container = d3.select(timelineRef.current);
+    container.selectAll("*").remove();
+
+    const margin = { top: 5, right: 10, bottom: 15, left: 10 };
+    const containerWidth = timelineRef.current.clientWidth;
+    const width = containerWidth - margin.left - margin.right;
+    const height = 40; // Compact height for header
+
+    const svg = container
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
+
+    const g = svg.append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Scales
+    const xScale = d3.scaleLinear()
+      .domain(d3.extent(yearData, d => d.year))
+      .range([0, width]);
+
+    const yScale = d3.scaleLinear()
+      .domain([0, d3.max(yearData, d => d.count)])
+      .range([height, 0]);
+
+    // Area generator
+    const area = d3.area()
+      .x(d => xScale(d.year))
+      .y0(height)
+      .y1(d => yScale(d.count))
+      .curve(d3.curveCardinal);
+
+    // Add area with white fill for header
+    g.append("path")
+      .datum(yearData)
+      .attr("fill", "rgba(255,255,255,0.3)")
+      .attr("d", area);
+
+    // Add line
+    const line = d3.line()
+      .x(d => xScale(d.year))
+      .y(d => yScale(d.count))
+      .curve(d3.curveCardinal);
+
+    g.append("path")
+      .datum(yearData)
+      .attr("fill", "none")
+      .attr("stroke", "white")
+      .attr("stroke-width", 2)
+      .attr("d", line);
+
+    // Add interactive dots
+    g.selectAll(".header-dot")
+      .data(yearData)
+      .enter()
+      .append("circle")
+      .attr("class", "header-dot")
+      .attr("cx", d => xScale(d.year))
+      .attr("cy", d => yScale(d.count))
+      .attr("r", 2)
+      .attr("fill", "white")
+      .attr("stroke", "rgba(255,255,255,0.5)")
+      .style("cursor", "pointer")
+      .on("click", function(event, d) {
+        handleYearClick({ activePayload: [{ payload: { year: d.year } }] });
+      });
+
+    // Add simple x-axis with fewer ticks
+    const xAxis = d3.axisBottom(xScale)
+      .tickFormat(d3.format("d"))
+      .ticks(5);
+
+    g.append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(xAxis)
+      .selectAll("text")
+      .style("fill", "white")
+      .style("font-size", "10px");
+
+    g.selectAll(".domain, .tick line")
+      .style("stroke", "rgba(255,255,255,0.5)");
+
+  }, [yearData]);
 
   const FilterButton = ({ active, onClick, children }) => (
     <button
@@ -520,12 +310,12 @@ const TamilSongsVisualization = () => {
           </div>
         </div>
       </div>
-              
+      
       <div className="flex flex-1 overflow-hidden">
-        {/* Panel 1: Filters - INCREASED WIDTH */}
-          <div className="bg-white border-r border-blue-200 flex flex-col" style={{ width: '280px', minWidth: '280px' }}>
+        {/* Panel 1: Filters */}
+        <div className="bg-white border-r border-blue-200 flex flex-col" style={{ width: '300px', minWidth: '300px' }}>                
           <div className="p-4 border-b border-blue-200">
-            {/* Reset Button - RENAMED */}
+            {/* Reset Button */}
             <button
               onClick={resetFilters}
               className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm mb-4"
@@ -534,7 +324,7 @@ const TamilSongsVisualization = () => {
               Reset All
             </button>
 
-            {/* Filter Tabs - Match Graph Layout */}
+            {/* Filter Tabs */}
             <div className="grid grid-cols-2 gap-1">
               <button
                 onClick={() => setActiveFilterTab('years')}
@@ -581,12 +371,11 @@ const TamilSongsVisualization = () => {
 
           {/* Filter Content */}
           <div className="flex-1 p-4 overflow-y-auto">
-            {/* Years Tab - DECADE BASED WITH 2-DIGIT YEARS */}
+            {/* Years Tab */}
             {activeFilterTab === 'years' && (
               <div>
                 <h3 className="text-sm font-medium text-blue-800 mb-3">Select Years by Decade</h3>
                 <div className="space-y-3">
-                  {/* Group years by decade */}
                   {(() => {
                     const decades = {};
                     uniqueYears.forEach(year => {
@@ -605,14 +394,11 @@ const TamilSongsVisualization = () => {
                         
                         return (
                           <div key={decade} className="border border-blue-200 rounded-lg p-3">
-                            {/* Decade Header Button - SIMPLIFIED */}
                             <button
                               onClick={() => {
                                 if (allDecadeSelected) {
-                                  // Remove all years in this decade
                                   setSelectedYears(prev => prev.filter(year => !decadeYears.includes(year)));
                                 } else {
-                                  // Add all years in this decade
                                   setSelectedYears(prev => [...new Set([...prev, ...decadeYears])]);
                                 }
                               }}
@@ -627,7 +413,6 @@ const TamilSongsVisualization = () => {
                               {decadeInt}s
                             </button>
                             
-                            {/* Individual Year Buttons - IMPROVED SIZING */}
                             <div className="mt-2 grid grid-cols-5 gap-1">
                               {decadeYears.map(year => (
                                 <button
@@ -651,7 +436,7 @@ const TamilSongsVisualization = () => {
               </div>
             )}
 
-            {/* Singers Tab - VERTICAL LAYOUT */}
+            {/* Singers Tab */}
             {activeFilterTab === 'singers' && (
               <div>
                 <h3 className="text-sm font-medium text-blue-800 mb-3">Select Singers</h3>
@@ -669,7 +454,7 @@ const TamilSongsVisualization = () => {
               </div>
             )}
 
-            {/* Composers Tab - VERTICAL LAYOUT */}
+            {/* Composers Tab */}
             {activeFilterTab === 'composers' && (
               <div>
                 <h3 className="text-sm font-medium text-blue-800 mb-3">Select Composers</h3>
@@ -687,7 +472,7 @@ const TamilSongsVisualization = () => {
               </div>
             )}
 
-            {/* Lyricists Tab - VERTICAL LAYOUT */}
+            {/* Lyricists Tab */}
             {activeFilterTab === 'lyricists' && (
               <div>
                 <h3 className="text-sm font-medium text-blue-800 mb-3">Select Lyricists</h3>
@@ -741,7 +526,7 @@ const TamilSongsVisualization = () => {
         </div>
 
         {/* Panel 2: Stunning Visualizations */}
-        <div className="flex-1 p-4 overflow-y-auto min-w-0" style={{ height: '720px', overflow: 'visible' }}>
+        <div className="flex-1 p-4 overflow-y-auto" style={{ height: '720px', overflow: 'visible' }}>
           <UltimateMusicArchaeology
             filteredSongs={filteredSongs}
             onYearClick={handleYearClick}
@@ -756,11 +541,11 @@ const TamilSongsVisualization = () => {
             onPause={() => setIsPlaying(false)}
             onNext={playNext}
             onPrevious={playPrevious}
-            />
+          />
         </div>
 
        {/* Panel 3: Player Controls at Top + Playlist */}
-       <div className="bg-white border-l border-blue-200 flex flex-col" style={{ width: '280px', minWidth: '280px' }}>
+       <div className="w-80 bg-white border-l border-blue-200 flex flex-col">
          {/* 1. PLAYER CONTROLS AT TOP */}
          <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
            {/* Now Playing Info */}
