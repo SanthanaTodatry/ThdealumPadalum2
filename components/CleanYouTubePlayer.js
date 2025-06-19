@@ -107,35 +107,35 @@ const CleanYouTubePlayer = ({
     );
   }
 
-  return (
-    <div className="h-full w-full bg-black rounded-lg overflow-hidden">
-      {videoId ? (
-        <div className="relative h-full w-full">
-          <YouTube
-            videoId={videoId}
-            opts={{
-              width: '100%',
-              height: '100%',
-              playerVars: {
-                autoplay: 0,
-                controls: 1,
-                rel: 0,
-                modestbranding: 1,
-                fs: 1,
-                iv_load_policy: 3,
-                showinfo: 0,
-              },
-            }}
-            onReady={(event) => setPlayer(event.target)}
-            onStateChange={(event) => {
-              if (event.data === 1) onPlay && onPlay();
-              else if (event.data === 2) onPause && onPause();
-              else if (event.data === 0) onNext && onNext();
-            }}
-            className="h-full w-full"
-          />          
-        </div>
-      ) : (
+return (
+  <div className="h-full w-full bg-black rounded-lg overflow-hidden">
+    {videoId ? (
+      <div className="h-full w-full"> {/* Ensure this uses full height */}
+        <YouTube
+          videoId={videoId}
+          opts={{
+            width: '100%',
+            height: '100%', // This should use container's full height
+            playerVars: {
+              autoplay: 0,
+              controls: 1,
+              rel: 0,
+              modestbranding: 1,
+              fs: 1,
+              iv_load_policy: 3,
+              showinfo: 0,
+            },
+          }}
+          onReady={(event) => setPlayer(event.target)}
+          onStateChange={(event) => {
+            if (event.data === 1) onPlay && onPlay();
+            else if (event.data === 2) onPause && onPause();
+            else if (event.data === 0) onNext && onNext();
+          }}
+          style={{ height: '100%', width: '100%' }} // Add explicit styling
+        />
+      </div>
+    ) : (
         <div className="h-full flex items-center justify-center text-white">
           <div className="text-center">
             <div className="text-4xl mb-4">🎵</div>
