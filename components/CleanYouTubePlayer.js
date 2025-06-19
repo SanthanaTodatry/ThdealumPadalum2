@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import YouTube from 'react-youtube';
 
 const CleanYouTubePlayer = ({ 
   song, 
@@ -110,23 +111,29 @@ const CleanYouTubePlayer = ({
     <div className="h-full w-full bg-black rounded-lg overflow-hidden">
       {videoId ? (
         <div className="relative h-full w-full">
-          <div className="h-full flex flex-col items-center justify-center text-white bg-gradient-to-br from-gray-900 to-black">
-            <div className="text-center max-w-lg p-8">
-              <div className="text-6xl mb-6">📺</div>
-              <h2 className="text-2xl font-bold mb-2">{song.song}</h2>
-              <p className="text-lg text-gray-300 mb-1">{song.movie} ({song.year})</p>
-              <p className="text-md text-gray-400 mb-6">{song.singer}</p>
-              
-              <div className="bg-green-600 text-white px-4 py-2 rounded-lg mb-4">
-                ✅ Video Found: {videoId}
-              </div>
-              
-              <div className="text-sm text-gray-500 bg-gray-800 p-3 rounded">
-                <p><strong>Next Step:</strong> Install react-youtube</p>
-                <p><code>npm install react-youtube</code></p>
-              </div>
-            </div>
-          </div>
+          <YouTube
+            videoId={videoId}
+            opts={{
+              width: '100%',
+              height: '100%',
+              playerVars: {
+                autoplay: 0,
+                controls: 1,
+                rel: 0,
+                modestbranding: 1,
+                fs: 1,
+                iv_load_policy: 3,
+                showinfo: 0,
+              },
+            }}
+            onReady={(event) => setPlayer(event.target)}
+            onStateChange={(event) => {
+              if (event.data === 1) onPlay && onPlay();
+              else if (event.data === 2) onPause && onPause();
+              else if (event.data === 0) onNext && onNext();
+            }}
+            className="h-full w-full"
+          />          
         </div>
       ) : (
         <div className="h-full flex items-center justify-center text-white">
