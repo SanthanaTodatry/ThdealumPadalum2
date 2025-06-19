@@ -339,8 +339,8 @@ const UltimateMusicArchaeology = ({
       {/* FIXED: Content Area - Option 1 Implementation */}
       <div className="flex-1 bg-white rounded-lg border border-gray-200 p-2">
         <div className="h-96 w-full overflow-y-auto rounded-lg border">
-          {activeTab === 'video' ? (
-            // Video tab - ONLY video content
+        
+          {activeTab === 'video' && (
             <div className="h-full w-full">
               {currentSong ? (
                 <CleanYouTubePlayer
@@ -357,15 +357,16 @@ const UltimateMusicArchaeology = ({
                   <div className="text-center">
                     <div className="text-4xl mb-4">🎵</div>
                     <div className="text-lg font-medium">Select a song to watch video</div>
-                    <div className="text-sm text-gray-500 mt-2">Use the playlist to choose a song</div>
                   </div>
                 </div>
               )}
             </div>
-          ) : (
-            // Chart tabs - ONLY chart content
+          )}
+          
+          {activeTab !== 'video' && (
             <div ref={svgRef} className="h-full w-full"></div>
           )}
+
         </div>
       </div>
     </div>
