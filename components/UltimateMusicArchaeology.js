@@ -125,14 +125,15 @@ const UltimateMusicArchaeology = ({
     const containerHeight = svgRef.current.clientHeight;
     const containerWidth = svgRef.current.clientWidth;
     
-    const width = Math.min(containerWidth - 40, 800); // Max 800px, with padding
-    const height = Math.min(Math.max(400, containerHeight - 40), 600); // Min 400px, Max 600px, with padding
-  
+    const width = Math.min(containerWidth - 20, 800); // Reduced padding
+    const height = Math.min(containerHeight - 20, containerHeight); // Use almost full height
+    
     const svg = container
       .append("svg")
       .attr("width", width)
-      .attr("height", height);
-  
+      .attr("height", height)
+      .style("display", "block"); // Ensure proper display
+    
     if (activeTab === 'collaborations') {
       drawCollaborationNetwork(svg, filteredArtists.collaborations, width, height);
     } else {
