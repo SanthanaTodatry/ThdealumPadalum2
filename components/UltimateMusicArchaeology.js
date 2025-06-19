@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-import { Users, Music, Mic, PenTool } from 'lucide-react';
+import { Users, Music, Mic, PenTool, Play } from 'lucide-react';
 
 // CleanYouTubePlayer component
 const CleanYouTubePlayer = ({ 
@@ -592,10 +592,10 @@ const UltimateMusicArchaeology = ({
       <div className="flex-1 bg-white rounded-lg border border-gray-200 p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-800">
-            {activeTab === 'collaborations' && `🤝 ${filteredArtists.collaborations.length} Collaboration Networks`}
             {activeTab === 'singers' && `🎤 ${filteredArtists.singers.length} Singers`}
             {activeTab === 'composers' && `🎼 ${filteredArtists.composers.length} Composers`}
             {activeTab === 'lyricists' && `✍️ ${filteredArtists.lyricists.length} Lyricists`}
+            {activeTab === 'collaborations' && `🤝 ${filteredArtists.collaborations.length} Collaboration Networks`}
             {activeTab === 'video' && `📺 Video Player`}
           </h3>
           
@@ -614,7 +614,9 @@ const UltimateMusicArchaeology = ({
                 { key: 'composers', label: 'Composers', icon: Music, count: filteredArtists.composers.length },
                 { key: 'lyricists', label: 'Lyricists', icon: PenTool, count: filteredArtists.lyricists.length },
                 { key: 'collaborations', label: 'Collaborations', icon: Users, count: filteredArtists.collaborations.length },
-                { key: 'video', label: 'Video', icon: Mic, count: '' } // Reusing Mic icon for video
+                { key: 'video', label: 'Video', icon: Play, count: '' }
+
+                
               ].map(({ key, label, icon: Icon, count }) => (
                 <button
                   key={key}
