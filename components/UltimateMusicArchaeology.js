@@ -122,7 +122,7 @@ const UltimateMusicArchaeology = ({
     container.selectAll("*").remove();
 
     const width = 800;
-    const height = 500;
+    const height = 700;
 
     const svg = container
       .append("svg")
