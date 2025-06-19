@@ -178,7 +178,98 @@ const TamilSongsVisualization = () => {
   
   // Reset trigger for charts
   const [chartResetTrigger, setChartResetTrigger] = useState(0);
-
+  
+  // Timeline ref for header
+  const timelineRef = useRef();
+  
+  // Draw compact timeline in header
+  useEffect(() => {
+    if (!timelineRef.current || !yearData.length) return;
+  
+    const container = d3.select(timelineRef.current);
+    container.selectAll("*").remove();
+  
+    const margin = { top: 5, right: 10, bottom: 15, left: 10 };
+    const containerWidth = timelineRef.current.clientWidth;
+    const width = containerWidth - margin.left - margin.right;
+    const height = 40; // Compact height for header
+  
+    const svg = container
+      .append("svg")
+      .attr("width", width   margin.left   margin.right)
+      .attr("height", height   margin.top   margin.bottom);
+  
+    const g = svg.append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+  
+    // Scales
+    const xScale = d3.scaleLinear()
+      .domain(d3.extent(yearData, d => d.year))
+      .range([0, width]);
+  
+    const yScale = d3.scaleLinear()
+      .domain([0, d3.max(yearData, d => d.count)])
+      .range([height, 0]);
+  
+    // Area generator
+    const area = d3.area()
+      .x(d => xScale(d.year))
+      .y0(height)
+      .y1(d => yScale(d.count))
+      .curve(d3.curveCardinal);
+  
+    // Add area with white fill for header
+    g.append("path")
+      .datum(yearData)
+      .attr("fill", "rgba(255,255,255,0.3)")
+      .attr("d", area);
+  
+    // Add line
+    const line = d3.line()
+      .x(d => xScale(d.year))
+      .y(d => yScale(d.count))
+      .curve(d3.curveCardinal);
+  
+    g.append("path")
+      .datum(yearData)
+      .attr("fill", "none")
+      .attr("stroke", "white")
+      .attr("stroke-width", 2)
+      .attr("d", line);
+  
+    // Add interactive dots
+    g.selectAll(".header-dot")
+      .data(yearData)
+      .enter()
+      .append("circle")
+      .attr("class", "header-dot")
+      .attr("cx", d => xScale(d.year))
+      .attr("cy", d => yScale(d.count))
+      .attr("r", 2)
+      .attr("fill", "white")
+      .attr("stroke", "rgba(255,255,255,0.5)")
+      .style("cursor", "pointer")
+      .on("click", function(event, d) {
+        handleYearClick({ activePayload: [{ payload: { year: d.year } }] });
+      });
+  
+    // Add simple x-axis with fewer ticks
+    const xAxis = d3.axisBottom(xScale)
+      .tickFormat(d3.format("d"))
+      .ticks(5);
+  
+    g.append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(xAxis)
+      .selectAll("text")
+      .style("fill", "white")
+      .style("font-size", "10px");
+  
+    g.selectAll(".domain, .tick line")
+      .style("stroke", "rgba(255,255,255,0.5)");
+  
+  }, [yearData]);
+  
   // Filter functions
   const toggleFilter = (item, selectedItems, setSelectedItems) => {
     if (selectedItems.includes(item)) {
@@ -402,29 +493,34 @@ const TamilSongsVisualization = () => {
 
   return (
     <div className="flex flex-col h-screen bg-slate-50 font-light text-slate-700">
-      {/* Title Header with Search */}
-      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-6 py-4 flex items-center justify-between shadow-lg">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent drop-shadow-lg animate-pulse">
-          தேடலும் பாடலும்
-        </h1>
-        
-        {/* Search in the middle */}
-        <div className="flex-1 max-w-md mx-8">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 transition-all"
-              placeholder="Search songs, movies, artists... (comma/space separated)"
-            />
+      {/* Header with Timeline and Search */}
+      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-6 py-4 shadow-lg">
+        <div className="flex items-center gap-6">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent drop-shadow-lg animate-pulse whitespace-nowrap">
+            தேடலும் பாடலும்
+          </h1>
+          
+          {/* Timeline in header */}
+          <div className="flex-1 mx-4">
+            <div ref={timelineRef} className="timeline-header"></div>
+          </div>
+          
+          {/* Search on the right */}
+          <div className="w-80">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 transition-all"
+                placeholder="Search songs, movies, artists..."
+              />
+            </div>
           </div>
         </div>
-        
-        <div className="w-48"></div> {/* Spacer for balance */}
       </div>
-      
+              
       <div className="flex flex-1 overflow-hidden">
         {/* Panel 1: Filters - INCREASED WIDTH */}
           <div className="bg-white border-r border-blue-200 flex flex-col" style={{ width: '280px', minWidth: '280px' }}>
@@ -654,27 +750,18 @@ const TamilSongsVisualization = () => {
             onLyricistClick={handleLyricistClick}
             chartFilters={chartFilters}
             resetTrigger={chartResetTrigger}
-          />
+            currentSong={currentSong}
+            isPlaying={isPlaying}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onNext={playNext}
+            onPrevious={playPrevious}
+            />
         </div>
 
-       {/* Panel 3: Clean Player + Playlist Layout */}
+       {/* Panel 3: Player Controls at Top + Playlist */}
        <div className="bg-white border-l border-blue-200 flex flex-col" style={{ width: '280px', minWidth: '280px' }}>
-         {/* 1. PLAYER ON TOP */}
-         {currentSong && (
-           <div className="border-b border-blue-200">
-             <CleanYouTubePlayer
-               song={currentSong}
-               isPlaying={isPlaying}
-               onPlay={() => setIsPlaying(true)}
-               onPause={() => setIsPlaying(false)}
-               onNext={playNext}
-               onPrevious={playPrevious}
-               className="rounded-none border-0"
-             />
-           </div>
-         )}
-
-         {/* 2. LIGHT BLUE CONTROLS IN MIDDLE */}
+         {/* 1. PLAYER CONTROLS AT TOP */}
          <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
            {/* Now Playing Info */}
            {currentSong && (
@@ -728,7 +815,7 @@ const TamilSongsVisualization = () => {
            </div>
          </div>
 
-         {/* 3. PLAYLIST AT BOTTOM */}
+         {/* 2. PLAYLIST TAKES REMAINING SPACE */}
          <div className="flex-1 p-4 overflow-y-auto">
            <h3 className="text-lg font-medium text-blue-800 mb-4">
              Playlist ({currentPlaylist.length})
