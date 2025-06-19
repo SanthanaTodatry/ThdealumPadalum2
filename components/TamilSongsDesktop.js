@@ -85,17 +85,21 @@ const TamilSongsVisualization = () => {
       const matchesComposer = selectedComposers.length === 0 || selectedComposers.includes(song.composer);
       const matchesSinger = selectedSingers.length === 0 || selectedSingers.includes(song.singer);
       const matchesLyricist = selectedLyricists.length === 0 || selectedLyricists.includes(song.lyricist);
-
+  
       const matchesChartYear = !chartFilters.year || song.year === chartFilters.year;
       const matchesChartSinger = !chartFilters.singer || song.singer === chartFilters.singer;
       const matchesChartComposer = !chartFilters.composer || song.composer === chartFilters.composer;
       const matchesChartLyricist = !chartFilters.lyricist || song.lyricist === chartFilters.lyricist;
-
+      
+      // NEW: Handle year range from brush selection
+      const matchesYearRange = !chartFilters.yearRange || 
+        (song.year >= chartFilters.yearRange[0] && song.year <= chartFilters.yearRange[1]);
+  
       return matchesSearch && matchesYear && matchesComposer && matchesSinger && matchesLyricist &&
-             matchesChartYear && matchesChartSinger && matchesChartComposer && matchesChartLyricist;
+             matchesChartYear && matchesChartSinger && matchesChartComposer && matchesChartLyricist && matchesYearRange;
     });
   }, [searchTerm, selectedYears, selectedComposers, selectedSingers, selectedLyricists, chartFilters]);
-
+  
   // Chart data preparation
   const yearData = useMemo(() => {
     const yearCounts = {};
