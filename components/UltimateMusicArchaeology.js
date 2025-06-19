@@ -584,32 +584,8 @@ const UltimateMusicArchaeology = ({
     <div className="h-full flex flex-col">
       {/* Navigation Buttons Only */}
       <div className="bg-white rounded-lg p-3 mb-3 shadow-sm border">        
-        {/* Horizontal Tab Navigation */}
-        <div className="flex gap-2">
-          {[
-            { key: 'collaborations', label: '🤝 Collaborations', icon: Users, count: filteredArtists.collaborations.length },
-            { key: 'singers', label: '🎤 Singers', icon: Mic, count: filteredArtists.singers.length },
-            { key: 'composers', label: '🎼 Composers', icon: Music, count: filteredArtists.composers.length },
-            { key: 'lyricists', label: '✍️ Lyricists', icon: PenTool, count: filteredArtists.lyricists.length },
-            { key: 'video', label: '📺 Video', icon: () => <span>📺</span>, count: '' }
-          ].map(({ key, label, icon: Icon, count }) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key)}
-              className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                activeTab === key
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-800'
-              }`}
-            >
-              <Icon className="w-3 h-3" />
-              <span>{label}</span>
-              <div className={`text-sm font-bold ${activeTab === key ? 'text-white' : 'text-blue-600'}`}>
-                {count}
-              </div>
-            </button>
-          ))}
-        </div>
+
+            
       </div>
 
       {/* Main Visualization */}
@@ -629,7 +605,36 @@ const UltimateMusicArchaeology = ({
               : activeTab === 'video'
               ? 'Large video player for current song'
               : 'Circle size = activity • Hover for details • Click to filter/unfilter'
-            }
+                  }
+            
+            {/* Horizontal Tab Navigation */}
+            <div className="flex gap-2">
+              {[
+                { key: 'singers', label: 'Singers', icon: Mic, count: filteredArtists.singers.length },
+                { key: 'composers', label: 'Composers', icon: Music, count: filteredArtists.composers.length },
+                { key: 'lyricists', label: 'Lyricists', icon: PenTool, count: filteredArtists.lyricists.length },
+                { key: 'collaborations', label: 'Collaborations', icon: Users, count: filteredArtists.collaborations.length },
+                { key: 'video', label: 'Video', icon: Mic, count: '' } // Reusing Mic icon for video
+              ].map(({ key, label, icon: Icon, count }) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                    activeTab === key
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-800'
+                  }`}
+                >
+                  <Icon className="w-3 h-3" />
+                  <span>{label}</span>
+                  {count !== '' && (
+                    <div className={`text-sm font-bold ${activeTab === key ? 'text-white' : 'text-blue-600'}`}>
+                      {count}
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
         
