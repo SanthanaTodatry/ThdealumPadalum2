@@ -341,9 +341,9 @@ const UltimateMusicArchaeology = ({
       </div>
 
       {/* FIXED: Content Area - Option 1 Implementation */}
-      <div className="flex-1 bg-white rounded-lg border border-gray-200 p-2">
-        <div className="flex-1 w-full overflow-y-auto rounded-lg border">
-        
+
+      <div className="flex-1 bg-white rounded-lg border border-gray-200 p-2 flex flex-col"> {/* Add flex flex-col */}
+        <div className="flex-1 w-full rounded-lg border overflow-hidden"> {/* Remove overflow-y-auto, add overflow-hidden */}
           {activeTab === 'video' && (
             <div className="h-full w-full">
               {currentSong ? (
