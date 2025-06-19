@@ -590,23 +590,7 @@ const UltimateMusicArchaeology = ({
 
       {/* Main Visualization */}
       <div className="flex-1 bg-white rounded-lg border border-gray-200 p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">
-            {activeTab === 'singers' && `🎤 ${filteredArtists.singers.length} Singers`}
-            {activeTab === 'composers' && `🎼 ${filteredArtists.composers.length} Composers`}
-            {activeTab === 'lyricists' && `✍️ ${filteredArtists.lyricists.length} Lyricists`}
-            {activeTab === 'collaborations' && `🤝 ${filteredArtists.collaborations.length} Collaboration Networks`}
-            {activeTab === 'video' && `📺 Video Player`}
-          </h3>
-          
-          <div className="text-sm text-gray-500">
-            {activeTab === 'collaborations' 
-              ? 'Hover for details • Click to filter/unfilter'
-              : activeTab === 'video'
-              ? 'Large video player for current song'
-              : 'Circle size = activity • Hover for details • Click to filter/unfilter'
-                  }
-            
+
             {/* Horizontal Tab Navigation */}
             <div className="flex gap-2">
               {[
@@ -636,8 +620,6 @@ const UltimateMusicArchaeology = ({
                   )}
                 </button>
               ))}
-            </div>
-          </div>
         </div>
         
         <div className="h-96 w-full overflow-y-auto rounded-lg border">
