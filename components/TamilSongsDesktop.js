@@ -19,7 +19,8 @@ const TamilSongsVisualization = () => {
     year: null,
     singer: null,
     composer: null,
-    lyricist: null
+    lyricist: null,
+    yearRange: null
   });
 
   // Audio state
@@ -54,8 +55,12 @@ const TamilSongsVisualization = () => {
       year: null,
       singer: null,
       composer: null,
-      lyricist: null
+      lyricist: null,
+      yearRange: null
     });
+    setChartResetTrigger(prev => prev + 1);
+  };
+    
     // Trigger chart reset
     setChartResetTrigger(prev => prev + 1);
   };
