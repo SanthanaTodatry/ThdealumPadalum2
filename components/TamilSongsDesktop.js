@@ -368,7 +368,7 @@ const TamilSongsVisualization = () => {
           </div>
           
           {/* Timeline with EXACT middle panel width - no flex-1, no margins */}
-          <div style={{ width: 'calc(100vw - 300px - 320px - 48px)' }}>
+          <div style={{ width: 'calc(100vw - 300px - 320px)' }}>
             <div ref={timelineRef} className="timeline-header"></div>
           </div>
           
