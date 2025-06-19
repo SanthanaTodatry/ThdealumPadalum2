@@ -183,58 +183,58 @@ const TamilSongsVisualization = () => {
   // Draw compact timeline in header
   useEffect(() => {
     if (!timelineRef.current || !yearData.length) return;
-
+  
     const container = d3.select(timelineRef.current);
     container.selectAll("*").remove();
-
+  
     const margin = { top: 5, right: 10, bottom: 15, left: 10 };
     const containerWidth = timelineRef.current.clientWidth;
     const width = containerWidth - margin.left - margin.right;
     const height = 40; // Compact height for header
-
+  
     const svg = container
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom);
-
+  
     const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
-
+  
     // Scales
     const xScale = d3.scaleLinear()
       .domain(d3.extent(yearData, d => d.year))
       .range([0, width]);
-
+  
     const yScale = d3.scaleLinear()
       .domain([0, d3.max(yearData, d => d.count)])
       .range([height, 0]);
-
+  
     // Area generator
     const area = d3.area()
       .x(d => xScale(d.year))
       .y0(height)
       .y1(d => yScale(d.count))
       .curve(d3.curveCardinal);
-
+  
     // Add area with white fill for header
     g.append("path")
       .datum(yearData)
       .attr("fill", "rgba(255,255,255,0.3)")
       .attr("d", area);
-
+  
     // Add line
     const line = d3.line()
       .x(d => xScale(d.year))
       .y(d => yScale(d.count))
       .curve(d3.curveCardinal);
-
+  
     g.append("path")
       .datum(yearData)
       .attr("fill", "none")
       .attr("stroke", "white")
       .attr("stroke-width", 2)
       .attr("d", line);
-
+  
     // Add interactive dots
     g.selectAll(".header-dot")
       .data(yearData)
@@ -250,22 +250,67 @@ const TamilSongsVisualization = () => {
       .on("click", function(event, d) {
         handleYearClick({ activePayload: [{ payload: { year: d.year } }] });
       });
-
+  
+    // Add brush for year range selection
+    const brush = d3.brushX()
+      .extent([[0, 0], [width, height]])
+      .on("brush end", function(event) {
+        if (event.selection) {
+          const [x0, x1] = event.selection;
+          const year0 = Math.round(xScale.invert(x0));
+          const year1 = Math.round(xScale.invert(x1));
+          
+          // Update chart filters for year range
+          if (year0 === year1) {
+            // Single year selected
+            handleYearClick({ activePayload: [{ payload: { year: year0 } }] });
+          } else {
+            // Year range selected - create custom filter
+            setChartFilters(prev => ({ 
+              ...prev, 
+              year: null, // Clear single year
+              yearRange: [year0, year1] // Add year range
+            }));
+          }
+        } else {
+          // Clear selection
+          setChartFilters(prev => ({ 
+            ...prev, 
+            year: null,
+            yearRange: null
+          }));
+        }
+      });
+  
+    // Add brush to timeline
+    g.append("g")
+      .attr("class", "brush")
+      .call(brush);
+  
+    // Style brush
+    g.selectAll(".brush .overlay")
+      .style("fill", "rgba(255,255,255,0.1)");
+      
+    g.selectAll(".brush .selection")
+      .style("fill", "rgba(255,255,255,0.3)")
+      .style("stroke", "white")
+      .style("stroke-width", 1);
+  
     // Add simple x-axis with fewer ticks
     const xAxis = d3.axisBottom(xScale)
       .tickFormat(d3.format("d"))
       .ticks(5);
-
+  
     g.append("g")
       .attr("transform", `translate(0,${height})`)
       .call(xAxis)
       .selectAll("text")
       .style("fill", "white")
       .style("font-size", "10px");
-
+  
     g.selectAll(".domain, .tick line")
       .style("stroke", "rgba(255,255,255,0.5)");
-
+  
   }, [yearData]);
 
   const FilterButton = ({ active, onClick, children }) => (
