@@ -108,7 +108,10 @@ const CleanYouTubePlayer = ({
   }
 
   return (
-    <div className="h-full w-full bg-black overflow-hidden"> {/* Add overflow-hidden */}
+    <div 
+    className="h-full w-full bg-black overflow-hidden"
+    style={{ position: 'relative', zIndex: 1 }}
+    > 
       {videoId ? (
         <div className="relative h-full w-full overflow-hidden"> {/* Add overflow-hidden */}
           <div className="absolute inset-0 p-2"> {/* Add padding wrapper */}
