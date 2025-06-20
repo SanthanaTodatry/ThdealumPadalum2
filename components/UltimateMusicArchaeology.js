@@ -121,19 +121,37 @@ const UltimateMusicArchaeology = ({
     const container = d3.select(svgRef.current);
     container.selectAll("*").remove();
   
-    // Dynamic sizing with limits
-    const containerHeight = svgRef.current.clientHeight;
-    const containerWidth = svgRef.current.clientWidth;
+    // Get actual container dimensions
+    const containerRect = svgRef.current.getBoundingClientRect();
+    const containerHeight = containerRect.height;
+    const containerWidth = containerRect.width;
     
-    const width = Math.min(containerWidth - 20, 800); // Reduced padding
-    const height = Math.min(containerHeight - 20, containerHeight); // Use almost full height
+    // Responsive sizing based on screen size
+    const isSmallScreen = window.innerWidth < 1024; // Laptop detection
+    const isLargeScreen = window.innerWidth > 1920;  // Large monitor detection
     
+    // Adaptive width
+    const maxWidth = isSmallScreen ? 600 : (isLargeScreen ? 1200 : 800);
+    const width = Math.min(containerWidth - 40, maxWidth);
+    
+    // Adaptive height - use percentage of container
+    const heightRatio = isSmallScreen ? 0.85 : 0.9; // Use 85% on small screens, 90% on larger
+    const minHeight = isSmallScreen ? 300 : 400;
+    const maxHeight = isLargeScreen ? 800 : 600;
+    
+    const height = Math.min(
+      Math.max(minHeight, containerHeight * heightRatio), 
+      maxHeight
+    );
+  
+    console.log(`Screen: ${window.innerWidth}x${window.innerHeight}, Container: ${containerWidth}x${containerHeight}, Chart: ${width}x${height}`);
+  
     const svg = container
       .append("svg")
       .attr("width", width)
       .attr("height", height)
-      .style("display", "block"); // Ensure proper display
-    
+      .style("display", "block");
+  
     if (activeTab === 'collaborations') {
       drawCollaborationNetwork(svg, filteredArtists.collaborations, width, height);
     } else {
