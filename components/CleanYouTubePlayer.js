@@ -120,6 +120,7 @@ const CleanYouTubePlayer = ({
               opts={{
                 width: '100%',
                 height: '100%',
+                host: 'https://www.youtube-nocookie.com',
                 playerVars: {
                   autoplay: 0,
                   controls: 1,
@@ -128,6 +129,8 @@ const CleanYouTubePlayer = ({
                   fs: 1,
                   iv_load_policy: 3,
                   showinfo: 0,
+                  origin: window?.location?.origin || 'https://thdealum-padalum2.vercel.app',
+                  enablejsapi: 1,
                 },
               }}
               onReady={(event) => setPlayer(event.target)}
