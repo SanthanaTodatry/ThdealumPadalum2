@@ -14,28 +14,37 @@ const CleanYouTubePlayer = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [player, setPlayer] = useState(null);
+  const [isPlayerReady, setIsPlayerReady] = useState(false); // ADD THIS STATE
 
   const YOUTUBE_API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
 
   // Reset video when song changes
   useEffect(() => {
     if (song) {
+      // IMPORTANT: Reset player state when song changes
+      setIsPlayerReady(false);
+      setPlayer(null);
       setVideoId(null);
       setError(null);
       searchForVideo(song);
     }
   }, [song?.id]);
 
-  // Auto-advance when playing state changes
+  // Auto-advance when playing state changes - ADD SAFETY CHECKS
   useEffect(() => {
-    if (player && videoId) {
-      if (isPlaying) {
-        player.playVideo();
-      } else {
-        player.pauseVideo();
+    if (player && videoId && isPlayerReady) { // Check isPlayerReady
+      try {
+        if (isPlaying) {
+          player.playVideo();
+        } else {
+          player.pauseVideo();
+        }
+      } catch (error) {
+        console.warn('YouTube player action failed:', error);
+        // Don't crash, just log the error
       }
     }
-  }, [isPlaying, player, videoId]);
+  }, [isPlaying, player, videoId, isPlayerReady]);
 
   const searchForVideo = async (song) => {
     setIsLoading(true);
@@ -69,6 +78,72 @@ const CleanYouTubePlayer = ({
     
     setIsLoading(false);
   };
+
+  // Get current environment details
+  const getCurrentOrigin = () => {
+    if (typeof window === 'undefined') {
+      return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    }
+    return window.location.origin;
+  };
+
+  // YouTube player options for large display
+  const opts = {
+    width: '100%',
+    height: '100%',
+    host: 'https://www.youtube-nocookie.com',
+    playerVars: {
+      autoplay: 0,
+      controls: 1,
+      rel: 0,
+      modestbranding: 1,
+      fs: 1,
+      iv_load_policy: 3,
+      showinfo: 0,
+      origin: getCurrentOrigin(),
+      enablejsapi: 1,
+    },
+  };
+
+  // Handle player events - ADD SAFETY CHECKS
+  const onReady = (event) => {
+    console.log('YouTube player ready');
+    setPlayer(event.target);
+    setIsPlayerReady(true); // Mark player as ready
+  };
+
+  const onStateChange = (event) => {
+    try {
+      if (event.data === 1) {
+        onPlay && onPlay();
+      } else if (event.data === 2) {
+        onPause && onPause();
+      } else if (event.data === 0) {
+        onNext && onNext();
+      }
+    } catch (error) {
+      console.warn('YouTube state change error:', error);
+    }
+  };
+
+  const onError = (event) => {
+    console.error('YouTube player error:', event);
+    setError('Video playback error');
+    setIsPlayerReady(false);
+  };
+
+  // Cleanup when component unmounts
+  useEffect(() => {
+    return () => {
+      if (player && isPlayerReady) {
+        try {
+          player.destroy();
+        } catch (error) {
+          console.warn('Error destroying player:', error);
+        }
+      }
+    };
+  }, [player, isPlayerReady]);
 
   // Loading state
   if (isLoading) {
@@ -108,37 +183,17 @@ const CleanYouTubePlayer = ({
   }
 
   return (
-    <div 
-    className="h-full w-full bg-black overflow-hidden"
-    style={{ position: 'relative', zIndex: 1 }}
-    > 
+    <div className="h-full w-full bg-black overflow-hidden" style={{ position: 'relative', zIndex: 1 }}>
       {videoId ? (
-        <div className="relative h-full w-full overflow-hidden"> {/* Add overflow-hidden */}
-          <div className="absolute inset-0 p-2"> {/* Add padding wrapper */}
+        <div className="relative h-full w-full overflow-hidden">
+          <div className="absolute inset-0 p-2">
             <YouTube
+              key={`${videoId}-${song?.id}`} // Force re-render on song change
               videoId={videoId}
-              opts={{
-                width: '100%',
-                height: '100%',
-                host: 'https://www.youtube-nocookie.com',
-                playerVars: {
-                  autoplay: 0,
-                  controls: 1,
-                  rel: 0,
-                  modestbranding: 1,
-                  fs: 1,
-                  iv_load_policy: 3,
-                  showinfo: 0,
-                  origin: window?.location?.origin || 'https://thdealum-padalum2.vercel.app',
-                  enablejsapi: 1,
-                },
-              }}
-              onReady={(event) => setPlayer(event.target)}
-              onStateChange={(event) => {
-                if (event.data === 1) onPlay && onPlay();
-                else if (event.data === 2) onPause && onPause();
-                else if (event.data === 0) onNext && onNext();
-              }}
+              opts={opts}
+              onReady={onReady}
+              onStateChange={onStateChange}
+              onError={onError} // ADD ERROR HANDLER
               className="w-full h-full"
               style={{ 
                 width: '100%', 
@@ -153,7 +208,7 @@ const CleanYouTubePlayer = ({
         <div className="h-full flex items-center justify-center text-white">
           <div className="text-center">
             <div className="text-4xl mb-4">🎵</div>
-            <div>Select a song to watch video</div>
+            <div>Preparing video...</div>
           </div>
         </div>
       )}
