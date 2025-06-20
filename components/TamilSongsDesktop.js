@@ -34,6 +34,28 @@ const TamilSongsVisualization = () => {
   // Timeline ref for header
   const timelineRef = useRef();
 
+  // Add useRef for playlist container
+  const playlistRef = useRef();
+  
+  // Add the scroll effect
+  useEffect(() => {
+    if (playlistRef.current && currentSong) {
+      const currentSongElement = playlistRef.current.querySelector(`[data-song-id="${currentSong.id}"]`);
+      if (currentSongElement) {
+        const container = playlistRef.current;
+        const elementTop = currentSongElement.offsetTop;
+        const elementHeight = currentSongElement.offsetHeight;
+        const containerHeight = container.clientHeight;
+        const scrollTop = elementTop - (containerHeight / 2) + (elementHeight / 2);
+        
+        container.scrollTo({
+          top: scrollTop,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [currentSong?.id]);
+
   // Filter functions
   const toggleFilter = (item, selectedItems, setSelectedItems) => {
     if (selectedItems.includes(item)) {
@@ -681,8 +703,8 @@ const TamilSongsVisualization = () => {
            </div>
          </div>
 
-         {/* 2. PLAYLIST TAKES REMAINING SPACE */}
-         <div className="flex-1 p-4 overflow-y-auto">
+        {/* 2. PLAYLIST TAKES REMAINING SPACE */}
+        <div ref={playlistRef} className="flex-1 p-4 overflow-y-auto">
            <h3 className="text-lg font-medium text-blue-800 mb-4">
              Playlist ({currentPlaylist.length})
            </h3>
