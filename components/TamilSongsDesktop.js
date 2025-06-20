@@ -715,7 +715,6 @@ const TamilSongsVisualization = () => {
          </div>
 
         {/* 2. PLAYLIST TAKES REMAINING SPACE */}
-        /*<div ref={playlistRef} className="flex-1 p-4 overflow-y-auto">*/
         <div className="flex-1 p-4 overflow-y-auto">
            <h3 className="text-lg font-medium text-blue-800 mb-4">
              Playlist ({currentPlaylist.length})
