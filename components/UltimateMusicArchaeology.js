@@ -114,6 +114,20 @@ const UltimateMusicArchaeology = ({
     };
   }, [artistNetworks, selectedYearRange]);
 
+  // Window Resize Listener
+  useEffect(() => {
+    const handleResize = () => {
+      // Force re-render of charts when window resizes
+      if (activeTab !== 'video') {
+        // Trigger the chart drawing useEffect
+        setZoomLevel(prev => prev); // Dummy state change to trigger re-render
+      }
+    };
+  
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [activeTab]);
+    
   // Draw main visualization - ONLY when NOT on video tab
   useEffect(() => {
     if (activeTab === 'video' || !svgRef.current || !filteredArtists[activeTab]) return;
