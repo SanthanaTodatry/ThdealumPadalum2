@@ -107,40 +107,42 @@ const CleanYouTubePlayer = ({
     );
   }
 
-  return (
-    <div className="h-full w-full bg-black"> {/* Remove rounded-lg overflow-hidden */}
-      {videoId ? (
-        <div className="relative h-full w-full">
-          <YouTube
-            videoId={videoId}
-            opts={{
-              width: '100%',
-              height: '100%',
-              playerVars: {
-                autoplay: 0,
-                controls: 1,
-                rel: 0,
-                modestbranding: 1,
-                fs: 1,
-                iv_load_policy: 3,
-                showinfo: 0,
-              },
-            }}
-            onReady={(event) => setPlayer(event.target)}
-            onStateChange={(event) => {
-              if (event.data === 1) onPlay && onPlay();
-              else if (event.data === 2) onPause && onPause();
-              else if (event.data === 0) onNext && onNext();
-            }}
-            className="absolute inset-0 w-full h-full" // Use absolute positioning
-            style={{ 
-              width: '100%', 
-              height: '100%',
-              minHeight: '400px' // Ensure minimum size
-            }}
-          />
-        </div>
-      ) : (
+return (
+  <div className="h-full w-full bg-black">
+    {videoId ? (
+      <div className="relative h-full w-full">
+        <YouTube
+          videoId={videoId}
+          opts={{
+            width: '100%',
+            height: '100%',
+            playerVars: {
+              autoplay: 0,
+              controls: 1,
+              rel: 0,
+              modestbranding: 1,
+              fs: 1,
+              iv_load_policy: 3,
+              showinfo: 0,
+              // Responsive quality based on screen size
+              quality: window.innerWidth > 1920 ? 'hd1080' : (window.innerWidth > 1024 ? 'hd720' : 'large'),
+            },
+          }}
+          onReady={(event) => setPlayer(event.target)}
+          onStateChange={(event) => {
+            if (event.data === 1) onPlay && onPlay();
+            else if (event.data === 2) onPause && onPause();
+            else if (event.data === 0) onNext && onNext();
+          }}
+          className="absolute inset-0 w-full h-full"
+          style={{ 
+            width: '100%', 
+            height: '100%',
+            minHeight: window.innerWidth < 1024 ? '300px' : '400px' // Responsive min height
+          }}
+        />
+      </div>
+    ) : (
         <div className="h-full flex items-center justify-center text-white">
           <div className="text-center">
             <div className="text-4xl mb-4">🎵</div>
