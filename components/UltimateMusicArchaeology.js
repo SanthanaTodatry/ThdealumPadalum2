@@ -373,12 +373,11 @@ const UltimateMusicArchaeology = ({
         </div>
       </div>
 
-      {/* FIXED: Content Area - Option 1 Implementation */}
-
-      <div className="flex-1 bg-white rounded-lg border border-gray-200 p-2 flex flex-col"> {/* Add flex flex-col */}
-        <div className="flex-1 w-full rounded-lg border overflow-hidden"> {/* Remove overflow-y-auto, add overflow-hidden */}
+      {/* Main Visualization */}
+      <div className="flex-1 bg-white rounded-lg border border-gray-200 p-2 flex flex-col min-h-0"> {/* Add min-h-0 */}
+        <div className="flex-1 w-full rounded-lg border overflow-hidden min-h-0"> {/* Add min-h-0 */}
           {activeTab === 'video' && (
-            <div className="h-full w-full">
+            <div className="h-full w-full min-h-0"> {/* Add min-h-0 */}
               {currentSong ? (
                 <CleanYouTubePlayer
                   song={currentSong}
@@ -403,7 +402,6 @@ const UltimateMusicArchaeology = ({
           {activeTab !== 'video' && (
             <div ref={svgRef} className="h-full w-full"></div>
           )}
-
         </div>
       </div>
     </div>
