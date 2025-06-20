@@ -175,169 +175,211 @@ const UltimateMusicArchaeology = ({
 
   // D3 drawing functions (same as before)
   const drawCollaborationNetwork = (svg, collaborations, width, height) => {
-    const margin = { top: 20, right: 20, bottom: 20, left: 20 };
-    const radius = Math.min(width, height) / 2 - Math.max(...Object.values(margin));
-
-    const g = svg.append("g")
-      .attr("transform", `translate(${width / 2},${height / 2})`);
-
-    const hierarchyData = prepareHierarchicalData(collaborations);
-    const root = d3.hierarchy(hierarchyData)
-      .sum(d => d.value || 1)
-      .sort((a, b) => b.value - a.value);
-
-    const partition = d3.partition().size([2 * Math.PI, radius]);
-    partition(root);
-
-    const decadeColors = d3.scaleOrdinal()
-      .domain(['1960', '1970', '1980', '1990', '2000', '2010', '2020'])
-      .range(['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#FFB74D']);
-
-    const composerColors = d3.scaleOrdinal(d3.schemeCategory10);
-    const singerColors = d3.scaleOrdinal(d3.schemePastel1);
-
-    const arc = d3.arc()
-      .startAngle(d => d.x0)
-      .endAngle(d => d.x1)
-      .innerRadius(d => d.y0)
-      .outerRadius(d => d.y1);
-
-    g.selectAll("path")
-      .data(root.descendants().filter(d => d.depth > 0))
-      .enter()
-      .append("path")
-      .attr("d", arc)
-      .style("fill", d => {
-        if (d.depth === 1) return decadeColors(d.data.name);
-        if (d.depth === 2) return composerColors(d.data.name);
-        if (d.depth === 3) return singerColors(d.data.name);
-        return d3.interpolateViridis(Math.random());
-      })
-      .style("stroke", "#fff")
-      .style("stroke-width", 1)
-      .style("opacity", 0.8)
-      .style("cursor", "pointer")
-      .on("click", function(event, d) {
-        if (d.depth === 1) {
-          const decade = parseInt(d.data.name);
-          setSelectedYearRange([decade, decade + 9]);
-          onYearClick({ activePayload: [{ payload: { year: decade } }] });
-        } else if (d.depth === 2) {
-          onComposerClick({ name: d.data.name });
-        } else if (d.depth === 3) {
-          onSingerClick({ name: d.data.name });
-        } else if (d.depth === 4) {
-          onLyricistClick({ name: d.data.name });
-        }
-      });
-
-    g.append("text")
-      .attr("text-anchor", "middle")
-      .style("font-size", "16px")
-      .style("font-weight", "bold")
-      .style("fill", "#666")
-      .text("Collaboration Network");
+  // Prepare treemap data for collaborations
+  const treemapData = {
+    name: "root",
+    children: collaborations.slice(0, 20).map(collab => ({ // Limit to top 20 for clarity
+      name: `${collab.composer} × ${collab.singer}`,
+      value: collab.songs.length,
+      data: collab
+    }))
   };
 
-  const prepareHierarchicalData = (collaborations) => {
-    const hierarchy = { name: "root", children: [] };
-    const decades = new Map();
+  const treemapLayout = d3.treemap()
+    .size([width, height])
+    .padding(3)
+    .tile(d3.treemapSquarify.ratio(2)); // Horizontal preference
 
-    collaborations.forEach(collab => {
-      collab.songs.forEach(song => {
-        const decade = Math.floor(song.year / 10) * 10;
-        const decadeKey = decade.toString();
-        
-        if (!decades.has(decadeKey)) {
-          decades.set(decadeKey, { name: decadeKey, children: [], composers: new Map() });
-        }
-        
-        const decadeData = decades.get(decadeKey);
-        const composerKey = song.composer;
-        
-        if (!decadeData.composers.has(composerKey)) {
-          decadeData.composers.set(composerKey, { name: composerKey, children: [], singers: new Map() });
-        }
-        
-        const composerData = decadeData.composers.get(composerKey);
-        const singerKey = song.singer;
-        
-        if (!composerData.singers.has(singerKey)) {
-          composerData.singers.set(singerKey, { name: singerKey, children: [], lyricists: new Map() });
-        }
-        
-        const singerData = composerData.singers.get(singerKey);
-        const lyricistKey = song.lyricist;
-        
-        if (!singerData.lyricists.has(lyricistKey)) {
-          singerData.lyricists.set(lyricistKey, { name: lyricistKey, value: 0, songs: [] });
-        }
-        
-        const lyricistData = singerData.lyricists.get(lyricistKey);
-        lyricistData.value += 1;
-        lyricistData.songs.push(song);
-      });
+  const root = d3.hierarchy(treemapData)
+    .sum(d => d.value || 0)
+    .sort((a, b) => b.value - a.value);
+
+  treemapLayout(root);
+
+  // Color scale for collaborations
+  const colorScale = d3.scaleOrdinal()
+    .domain(['1960', '1970', '1980', '1990', '2000', '2010', '2020'])
+    .range(['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#FFB74D']);
+
+  // Create collaboration rectangles
+  svg.selectAll("rect")
+    .data(root.children)
+    .enter()
+    .append("rect")
+    .attr("x", d => d.x0)
+    .attr("y", d => d.y0)
+    .attr("width", d => d.x1 - d.x0)
+    .attr("height", d => d.y1 - d.y0)
+    .attr("fill", d => {
+      const avgYear = d.data.data ? 
+        Math.floor(Array.from(d.data.data.years).reduce((a, b) => a + b, 0) / d.data.data.years.size / 10) * 10 :
+        2000;
+      return colorScale(avgYear.toString());
+    })
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 2)
+    .attr("rx", 4)
+    .style("cursor", "pointer")
+    .style("opacity", 0.8)
+    .on("click", function(event, d) {
+      if (d.data.data) {
+        onComposerClick({ name: d.data.data.composer });
+      }
     });
 
-    decades.forEach(decadeData => {
-      decadeData.children = Array.from(decadeData.composers.values());
-      decadeData.children.forEach(composerData => {
-        composerData.children = Array.from(composerData.singers.values());
-        composerData.children.forEach(singerData => {
-          singerData.children = Array.from(singerData.lyricists.values());
-        });
-      });
+  // Add collaboration labels
+  svg.selectAll("text")
+    .data(root.children)
+    .enter()
+    .append("text")
+    .attr("x", d => d.x0 + 8)
+    .attr("y", d => d.y0 + (d.y1 - d.y0) / 2)
+    .attr("dy", "0.35em")
+    .style("font-size", d => {
+      const rectWidth = d.x1 - d.x0;
+      const rectHeight = d.y1 - d.y0;
+      return Math.min(rectWidth / 12, rectHeight / 3, 12) + "px";
+    })
+    .style("font-weight", "600")
+    .style("fill", "white")
+    .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)")
+    .style("pointer-events", "none")
+    .each(function(d) {
+      const rectWidth = d.x1 - d.x0;
+      const rectHeight = d.y1 - d.y0;
+      
+      if (rectWidth > 100 && rectHeight > 30) {
+        const text = d3.select(this);
+        const name = d.data.name;
+        const maxLength = Math.floor(rectWidth / 7);
+        
+        if (name.length > maxLength) {
+          text.text(name.substring(0, maxLength - 3) + "...");
+        } else {
+          text.text(name);
+        }
+      }
     });
 
-    hierarchy.children = Array.from(decades.values());
-    return hierarchy;
-  };
-
+  // Add title
+  svg.append("text")
+    .attr("x", 10)
+    .attr("y", 15)
+    .style("font-size", "14px")
+    .style("font-weight", "bold")
+    .style("fill", "#333")
+    .text("Top Collaborations");
+};
   const drawArtistVisualization = (svg, artists, type, width, height) => {
-    const packLayout = d3.pack()
+    // Create horizontal treemap layout
+    const treemapLayout = d3.treemap()
       .size([width, height])
-      .padding(5);
-
+      .padding(2)
+      .paddingTop(20) // Space for category labels
+      .tile(d3.treemapSquarify.ratio(2)); // Ratio 2 = prefer horizontal rectangles
+  
+    // Prepare hierarchical data
     const root = d3.hierarchy({ children: artists })
       .sum(d => d.totalSongs || 1)
       .sort((a, b) => b.value - a.value);
-
-    packLayout(root);
-
+  
+    treemapLayout(root);
+  
+    // Color scale
     const colorScale = d3.scaleSequential()
       .domain([0, d3.max(artists, d => d.totalSongs)])
       .interpolator(d3.interpolateViridis);
-
-    svg.selectAll("circle")
+  
+    // Create rectangles
+    const rects = svg.selectAll("rect")
       .data(root.children)
       .enter()
-      .append("circle")
-      .attr("cx", d => d.x)
-      .attr("cy", d => d.y)
-      .attr("r", d => d.r * zoomLevel)
+      .append("rect")
+      .attr("x", d => d.x0)
+      .attr("y", d => d.y0)
+      .attr("width", d => d.x1 - d.x0)
+      .attr("height", d => d.y1 - d.y0)
       .attr("fill", d => colorScale(d.data.totalSongs))
       .attr("stroke", "#fff")
       .attr("stroke-width", 2)
+      .attr("rx", 4) // Rounded corners
       .style("cursor", "pointer")
+      .on("mouseover", function(event, d) {
+        d3.select(this)
+          .attr("stroke-width", 4)
+          .attr("stroke", "#333");
+        
+        showTooltip(event, d.data, type);
+      })
+      .on("mouseout", function(event, d) {
+        d3.select(this)
+          .attr("stroke-width", 2)
+          .attr("stroke", "#fff");
+        
+        hideTooltip();
+      })
       .on("click", function(event, d) {
         if (type === 'singers') onSingerClick({ name: d.data.name });
         if (type === 'composers') onComposerClick({ name: d.data.name });
         if (type === 'lyricists') onLyricistClick({ name: d.data.name });
       });
-
+  
+    // Add text labels - positioned for horizontal rectangles
     svg.selectAll("text")
-      .data(root.children.filter(d => d.r > 20))
+      .data(root.children)
       .enter()
       .append("text")
-      .attr("x", d => d.x)
-      .attr("y", d => d.y)
-      .attr("text-anchor", "middle")
+      .attr("x", d => d.x0 + 8) // Left-aligned with padding
+      .attr("y", d => d.y0 + (d.y1 - d.y0) / 2) // Vertically centered
       .attr("dy", "0.35em")
-      .style("font-size", d => Math.min(d.r / 3, 14) + "px")
-      .style("font-weight", "bold")
+      .style("font-size", d => {
+        const rectWidth = d.x1 - d.x0;
+        const rectHeight = d.y1 - d.y0;
+        return Math.min(rectWidth / 8, rectHeight / 3, 14) + "px"; // Responsive font size
+      })
+      .style("font-weight", "600")
       .style("fill", "white")
       .style("pointer-events", "none")
-      .text(d => d.data.name.length > 12 ? d.data.name.substring(0, 12) + "..." : d.data.name);
+      .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)") // Better readability
+      .each(function(d) {
+        const rectWidth = d.x1 - d.x0;
+        const rectHeight = d.y1 - d.y0;
+        const text = d3.select(this);
+        
+        // Only show text if rectangle is large enough
+        if (rectWidth > 80 && rectHeight > 25) {
+          const name = d.data.name;
+          const maxLength = Math.floor(rectWidth / 8); // Characters that fit
+          
+          if (name.length > maxLength) {
+            text.text(name.substring(0, maxLength - 3) + "...");
+          } else {
+            text.text(name);
+          }
+          
+          // Add song count on second line if rectangle is tall enough
+          if (rectHeight > 45) {
+            svg.append("text")
+              .attr("x", d.x0 + 8)
+              .attr("y", d.y0 + (d.y1 - d.y0) / 2 + 15)
+              .attr("dy", "0.35em")
+              .style("font-size", Math.min(rectWidth / 12, rectHeight / 4, 10) + "px")
+              .style("font-weight", "400")
+              .style("fill", "rgba(255,255,255,0.8)")
+              .style("pointer-events", "none")
+              .text(`${d.data.totalSongs} songs`);
+          }
+        }
+      });
+  
+    // Add category title
+    svg.append("text")
+      .attr("x", 10)
+      .attr("y", 15)
+      .style("font-size", "14px")
+      .style("font-weight", "bold")
+      .style("fill", "#333")
+      .text(`${type.charAt(0).toUpperCase() + type.slice(1)} by Song Count`);
   };
 
   return (
