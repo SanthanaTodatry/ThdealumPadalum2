@@ -33,40 +33,26 @@ const TamilSongsVisualization = () => {
   
   // Timeline ref for header
   const timelineRef = useRef();
-/*
-  // Playlist ref for auto-scroll
+
+  // Simple playlist ref for auto-scroll
   const playlistRef = useRef();
   
-  // Add scroll effect with error handling
+  // Simple auto-scroll effect
   useEffect(() => {
-    if (!playlistRef.current || !currentSong?.id) return;
-    
-    try {
-      const currentSongElement = playlistRef.current.querySelector(`[data-song-id="${currentSong.id}"]`);
-      if (currentSongElement) {
-        const container = playlistRef.current;
-        const elementTop = currentSongElement.offsetTop;
-        const elementHeight = currentSongElement.offsetHeight;
-        const containerHeight = container.clientHeight;
-        const scrollTop = elementTop - (containerHeight / 2) + (elementHeight / 2);
-        
-        container.scrollTo({
-          top: Math.max(0, scrollTop), // Prevent negative scroll
-          behavior: 'smooth'
-        });
-      }
-    } catch (error) {
-      console.warn('Playlist scroll error:', error);
-      // Fallback to simple scroll
-      if (playlistRef.current) {
-        const currentSongElement = playlistRef.current.querySelector(`[data-song-id="${currentSong.id}"]`);
-        if (currentSongElement) {
-          currentSongElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (playlistRef.current && currentSong) {
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        const currentElement = playlistRef.current.querySelector(`[data-song-id="${currentSong.id}"]`);
+        if (currentElement) {
+          currentElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
         }
-      }
+      }, 100);
     }
   }, [currentSong?.id]);
-*/  
+    
   // Filter functions
   const toggleFilter = (item, selectedItems, setSelectedItems) => {
     if (selectedItems.includes(item)) {
@@ -715,7 +701,7 @@ const TamilSongsVisualization = () => {
          </div>
 
         {/* 2. PLAYLIST TAKES REMAINING SPACE */}
-        <div className="flex-1 p-4 overflow-y-auto">
+        <div ref={playlistRef} className="flex-1 p-4 overflow-y-auto">
            <h3 className="text-lg font-medium text-blue-800 mb-4">
              Playlist ({currentPlaylist.length})
            </h3>
