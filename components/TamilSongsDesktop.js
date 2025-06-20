@@ -34,12 +34,14 @@ const TamilSongsVisualization = () => {
   // Timeline ref for header
   const timelineRef = useRef();
 
-  // Add useRef for playlist container
+  // Playlist ref for auto-scroll
   const playlistRef = useRef();
   
-  // Add the scroll effect
+  // Add scroll effect with error handling
   useEffect(() => {
-    if (playlistRef.current && currentSong) {
+    if (!playlistRef.current || !currentSong?.id) return;
+    
+    try {
       const currentSongElement = playlistRef.current.querySelector(`[data-song-id="${currentSong.id}"]`);
       if (currentSongElement) {
         const container = playlistRef.current;
@@ -49,13 +51,22 @@ const TamilSongsVisualization = () => {
         const scrollTop = elementTop - (containerHeight / 2) + (elementHeight / 2);
         
         container.scrollTo({
-          top: scrollTop,
+          top: Math.max(0, scrollTop), // Prevent negative scroll
           behavior: 'smooth'
         });
       }
+    } catch (error) {
+      console.warn('Playlist scroll error:', error);
+      // Fallback to simple scroll
+      if (playlistRef.current) {
+        const currentSongElement = playlistRef.current.querySelector(`[data-song-id="${currentSong.id}"]`);
+        if (currentSongElement) {
+          currentSongElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
     }
   }, [currentSong?.id]);
-
+  
   // Filter functions
   const toggleFilter = (item, selectedItems, setSelectedItems) => {
     if (selectedItems.includes(item)) {
