@@ -107,46 +107,47 @@ const CleanYouTubePlayer = ({
     );
   }
 
-return (
-  <div className="h-full w-full bg-black">
-    {videoId ? (
-      <div className="relative h-full w-full">
-        <YouTube
-          videoId={videoId}
-          opts={{
-            width: '100%',
-            height: '100%',
-            playerVars: {
-              autoplay: 0,
-              controls: 1,
-              rel: 0,
-              modestbranding: 1,
-              fs: 1,
-              iv_load_policy: 3,
-              showinfo: 0,
-              // Responsive quality based on screen size
-              quality: window.innerWidth > 1920 ? 'hd1080' : (window.innerWidth > 1024 ? 'hd720' : 'large'),
-            },
-          }}
-          onReady={(event) => setPlayer(event.target)}
-          onStateChange={(event) => {
-            if (event.data === 1) onPlay && onPlay();
-            else if (event.data === 2) onPause && onPause();
-            else if (event.data === 0) onNext && onNext();
-          }}
-          className="absolute inset-0 w-full h-full"
-          style={{ 
-            width: '100%', 
-            height: '100%',
-            minHeight: window.innerWidth < 1024 ? '300px' : '400px' // Responsive min height
-          }}
-        />
-      </div>
-    ) : (
+  return (
+    <div className="h-full w-full bg-black overflow-hidden"> {/* Add overflow-hidden */}
+      {videoId ? (
+        <div className="relative h-full w-full overflow-hidden"> {/* Add overflow-hidden */}
+          <div className="absolute inset-0 p-2"> {/* Add padding wrapper */}
+            <YouTube
+              videoId={videoId}
+              opts={{
+                width: '100%',
+                height: '100%',
+                playerVars: {
+                  autoplay: 0,
+                  controls: 1,
+                  rel: 0,
+                  modestbranding: 1,
+                  fs: 1,
+                  iv_load_policy: 3,
+                  showinfo: 0,
+                },
+              }}
+              onReady={(event) => setPlayer(event.target)}
+              onStateChange={(event) => {
+                if (event.data === 1) onPlay && onPlay();
+                else if (event.data === 2) onPause && onPause();
+                else if (event.data === 0) onNext && onNext();
+              }}
+              className="w-full h-full"
+              style={{ 
+                width: '100%', 
+                height: '100%',
+                maxWidth: '100%',
+                maxHeight: '100%'
+              }}
+            />
+          </div>
+        </div>
+      ) : (
         <div className="h-full flex items-center justify-center text-white">
           <div className="text-center">
             <div className="text-4xl mb-4">🎵</div>
-            <div>Preparing video...</div>
+            <div>Select a song to watch video</div>
           </div>
         </div>
       )}
