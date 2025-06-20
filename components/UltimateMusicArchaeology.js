@@ -25,6 +25,53 @@ const UltimateMusicArchaeology = ({
   
   const svgRef = useRef();
 
+  // TOOLTIP FUNCTIONS
+  const showTooltip = (event, data, type) => {
+    // Remove any existing tooltips first
+    d3.selectAll(".main-tooltip").remove();
+    
+    const tooltip = d3.select("body").append("div")
+      .attr("class", "main-tooltip")
+      .style("position", "absolute")
+      .style("background", "rgba(0,0,0,0.9)")
+      .style("color", "white")
+      .style("padding", "12px")
+      .style("border-radius", "8px")
+      .style("font-size", "13px")
+      .style("pointer-events", "none")
+      .style("z-index", 1000)
+      .style("max-width", "300px");
+
+    let content = "";
+    if (type === 'collaboration') {
+      content = `
+        <strong>Collaboration</strong><br/>
+        Composer: ${data.composer}<br/>
+        Singer: ${data.singer}<br/>
+        Lyricist: ${data.lyricist}<br/>
+        Songs: ${data.songs.length}<br/>
+        Years: ${Math.min(...data.years)} - ${Math.max(...data.years)}<br/>
+        Movies: ${data.movies.size}
+      `;
+    } else {
+      const years = Array.from(data.activeYears);
+      content = `
+        <strong>${data.name}</strong><br/>
+        Total Songs: ${data.totalSongs}<br/>
+        Active: ${Math.min(...years)} - ${Math.max(...years)}<br/>
+        Collaborators: ${data.collaborators.composers.size + data.collaborators.singers.size + data.collaborators.lyricists.size - 1}
+      `;
+    }
+
+    tooltip.html(content)
+      .style("left", (event.pageX + 10) + "px")
+      .style("top", (event.pageY - 10) + "px");
+  };
+
+  const hideTooltip = () => {
+    d3.selectAll(".main-tooltip").remove();
+  };
+  
   // Reset chart states when resetTrigger changes
   useEffect(() => {
     if (resetTrigger > 0) {
@@ -271,50 +318,6 @@ const UltimateMusicArchaeology = ({
       .text("Top Collaborations");
   };
 
-  // Tooltip functions
-  const showTooltip = (event, data, type) => {
-    const tooltip = d3.select("body").append("div")
-      .attr("class", "main-tooltip")
-      .style("position", "absolute")
-      .style("background", "rgba(0,0,0,0.9)")
-      .style("color", "white")
-      .style("padding", "12px")
-      .style("border-radius", "8px")
-      .style("font-size", "13px")
-      .style("pointer-events", "none")
-      .style("z-index", 1000)
-      .style("max-width", "300px");
-  
-    let content = "";
-    if (type === 'collaboration') {
-      content = `
-        <strong>Collaboration</strong><br/>
-        Composer: ${data.composer}<br/>
-        Singer: ${data.singer}<br/>
-        Lyricist: ${data.lyricist}<br/>
-        Songs: ${data.songs.length}<br/>
-        Years: ${Math.min(...data.years)} - ${Math.max(...data.years)}<br/>
-        Movies: ${data.movies.size}
-      `;
-    } else {
-      const years = Array.from(data.activeYears);
-      content = `
-        <strong>${data.name}</strong><br/>
-        Total Songs: ${data.totalSongs}<br/>
-        Active: ${Math.min(...years)} - ${Math.max(...years)}<br/>
-        Collaborators: ${data.collaborators.composers.size + data.collaborators.singers.size + data.collaborators.lyricists.size - 1}
-      `;
-    }
-  
-    tooltip.html(content)
-      .style("left", (event.pageX + 10) + "px")
-      .style("top", (event.pageY - 10) + "px");
-  };
-  
-  const hideTooltip = () => {
-    d3.selectAll(".main-tooltip").remove();
-  };
-  
   const drawArtistVisualization = (svg, artists, type, width, height) => {
     // Create horizontal treemap layout
     const treemapLayout = d3.treemap()
