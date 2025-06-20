@@ -723,6 +723,7 @@ const TamilSongsVisualization = () => {
              {currentPlaylist.map((song, index) => (
                <div 
                  key={song.id} 
+                 data-song-id={song.id} 
                  className={`p-3 border rounded cursor-pointer transition-all ${
                    currentSong?.id === song.id 
                      ? 'border-blue-500 bg-blue-50' 
