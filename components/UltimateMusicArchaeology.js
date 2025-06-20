@@ -173,103 +173,104 @@ const UltimateMusicArchaeology = ({
     }
   }, [filteredArtists, activeTab, zoomLevel, highlightedArtist]);
 
-  // D3 drawing functions (same as before)
-  const drawCollaborationNetwork = (svg, collaborations, width, height) => {
-  // Prepare treemap data for collaborations
-  const treemapData = {
-    name: "root",
-    children: collaborations.slice(0, 20).map(collab => ({ // Limit to top 20 for clarity
-      name: `${collab.composer} × ${collab.singer}`,
-      value: collab.songs.length,
-      data: collab
-    }))
-  };
-
-  const treemapLayout = d3.treemap()
-    .size([width, height])
-    .padding(3)
-    .tile(d3.treemapSquarify.ratio(2)); // Horizontal preference
-
-  const root = d3.hierarchy(treemapData)
-    .sum(d => d.value || 0)
-    .sort((a, b) => b.value - a.value);
-
-  treemapLayout(root);
-
-  // Color scale for collaborations
-  const colorScale = d3.scaleOrdinal()
-    .domain(['1960', '1970', '1980', '1990', '2000', '2010', '2020'])
-    .range(['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#FFB74D']);
-
-  // Create collaboration rectangles
-  svg.selectAll("rect")
-    .data(root.children)
-    .enter()
-    .append("rect")
-    .attr("x", d => d.x0)
-    .attr("y", d => d.y0)
-    .attr("width", d => d.x1 - d.x0)
-    .attr("height", d => d.y1 - d.y0)
-    .attr("fill", d => {
-      const avgYear = d.data.data ? 
-        Math.floor(Array.from(d.data.data.years).reduce((a, b) => a + b, 0) / d.data.data.years.size / 10) * 10 :
-        2000;
-      return colorScale(avgYear.toString());
-    })
-    .attr("stroke", "#fff")
-    .attr("stroke-width", 2)
-    .attr("rx", 4)
-    .style("cursor", "pointer")
-    .style("opacity", 0.8)
-    .on("click", function(event, d) {
-      if (d.data.data) {
-        onComposerClick({ name: d.data.data.composer });
-      }
-    });
-
-  // Add collaboration labels
-  svg.selectAll("text")
-    .data(root.children)
-    .enter()
-    .append("text")
-    .attr("x", d => d.x0 + 8)
-    .attr("y", d => d.y0 + (d.y1 - d.y0) / 2)
-    .attr("dy", "0.35em")
-    .style("font-size", d => {
-      const rectWidth = d.x1 - d.x0;
-      const rectHeight = d.y1 - d.y0;
-      return Math.min(rectWidth / 12, rectHeight / 3, 12) + "px";
-    })
-    .style("font-weight", "600")
-    .style("fill", "white")
-    .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)")
-    .style("pointer-events", "none")
-    .each(function(d) {
-      const rectWidth = d.x1 - d.x0;
-      const rectHeight = d.y1 - d.y0;
-      
-      if (rectWidth > 100 && rectHeight > 30) {
-        const text = d3.select(this);
-        const name = d.data.name;
-        const maxLength = Math.floor(rectWidth / 7);
-        
-        if (name.length > maxLength) {
-          text.text(name.substring(0, maxLength - 3) + "...");
-        } else {
-          text.text(name);
+    // D3 drawing functions (same as before)
+    const drawCollaborationNetwork = (svg, collaborations, width, height) => {
+    // Prepare treemap data for collaborations
+    const treemapData = {
+      name: "root",
+      children: collaborations.slice(0, 20).map(collab => ({ // Limit to top 20 for clarity
+        name: `${collab.composer} × ${collab.singer}`,
+        value: collab.songs.length,
+        data: collab
+      }))
+    };
+  
+    const treemapLayout = d3.treemap()
+      .size([width, height])
+      .padding(3)
+      .tile(d3.treemapSquarify.ratio(2)); // Horizontal preference
+  
+    const root = d3.hierarchy(treemapData)
+      .sum(d => d.value || 0)
+      .sort((a, b) => b.value - a.value);
+  
+    treemapLayout(root);
+  
+    // Color scale for collaborations
+    const colorScale = d3.scaleOrdinal()
+      .domain(['1960', '1970', '1980', '1990', '2000', '2010', '2020'])
+      .range(['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#FFB74D']);
+  
+    // Create collaboration rectangles
+    svg.selectAll("rect")
+      .data(root.children)
+      .enter()
+      .append("rect")
+      .attr("x", d => d.x0)
+      .attr("y", d => d.y0)
+      .attr("width", d => d.x1 - d.x0)
+      .attr("height", d => d.y1 - d.y0)
+      .attr("fill", d => {
+        const avgYear = d.data.data ? 
+          Math.floor(Array.from(d.data.data.years).reduce((a, b) => a + b, 0) / d.data.data.years.size / 10) * 10 :
+          2000;
+        return colorScale(avgYear.toString());
+      })
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 2)
+      .attr("rx", 4)
+      .style("cursor", "pointer")
+      .style("opacity", 0.8)
+      .on("click", function(event, d) {
+        if (d.data.data) {
+          onComposerClick({ name: d.data.data.composer });
         }
-      }
-    });
-
-  // Add title
-  svg.append("text")
-    .attr("x", 10)
-    .attr("y", 15)
-    .style("font-size", "14px")
-    .style("font-weight", "bold")
-    .style("fill", "#333")
-    .text("Top Collaborations");
-};
+      });
+  
+    // Add collaboration labels
+    svg.selectAll("text")
+      .data(root.children)
+      .enter()
+      .append("text")
+      .attr("x", d => d.x0 + 8)
+      .attr("y", d => d.y0 + (d.y1 - d.y0) / 2)
+      .attr("dy", "0.35em")
+      .style("font-size", d => {
+        const rectWidth = d.x1 - d.x0;
+        const rectHeight = d.y1 - d.y0;
+        return Math.min(rectWidth / 12, rectHeight / 3, 12) + "px";
+      })
+      .style("font-weight", "600")
+      .style("fill", "white")
+      .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)")
+      .style("pointer-events", "none")
+      .each(function(d) {
+        const rectWidth = d.x1 - d.x0;
+        const rectHeight = d.y1 - d.y0;
+        
+        if (rectWidth > 100 && rectHeight > 30) {
+          const text = d3.select(this);
+          const name = d.data.name;
+          const maxLength = Math.floor(rectWidth / 7);
+          
+          if (name.length > maxLength) {
+            text.text(name.substring(0, maxLength - 3) + "...");
+          } else {
+            text.text(name);
+          }
+        }
+      });
+  
+    // Add title
+    svg.append("text")
+      .attr("x", 10)
+      .attr("y", 15)
+      .style("font-size", "14px")
+      .style("font-weight", "bold")
+      .style("fill", "#333")
+      .text("Top Collaborations");
+  };
+  
   const drawArtistVisualization = (svg, artists, type, width, height) => {
     // Create horizontal treemap layout
     const treemapLayout = d3.treemap()
