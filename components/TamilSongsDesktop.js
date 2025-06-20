@@ -33,7 +33,7 @@ const TamilSongsVisualization = () => {
   
   // Timeline ref for header
   const timelineRef = useRef();
-
+/*
   // Simple playlist ref for auto-scroll
   const playlistRef = useRef();
   
@@ -52,7 +52,7 @@ const TamilSongsVisualization = () => {
       }, 100);
     }
   }, [currentSong?.id]);
-    
+*/    
   // Filter functions
   const toggleFilter = (item, selectedItems, setSelectedItems) => {
     if (selectedItems.includes(item)) {
@@ -701,7 +701,7 @@ const TamilSongsVisualization = () => {
          </div>
 
         {/* 2. PLAYLIST TAKES REMAINING SPACE */}
-        <div ref={playlistRef} className="flex-1 p-4 overflow-y-auto">
+        <div className="flex-1 p-4 overflow-y-auto">
            <h3 className="text-lg font-medium text-blue-800 mb-4">
              Playlist ({currentPlaylist.length})
            </h3>
