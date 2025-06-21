@@ -33,26 +33,7 @@ const TamilSongsVisualization = () => {
   
   // Timeline ref for header
   const timelineRef = useRef();
-/*
-  // Simple playlist ref for auto-scroll
-  const playlistRef = useRef();
-  
-  // Simple auto-scroll effect
-  useEffect(() => {
-    if (playlistRef.current && currentSong) {
-      // Small delay to ensure DOM is updated
-      setTimeout(() => {
-        const currentElement = playlistRef.current.querySelector(`[data-song-id="${currentSong.id}"]`);
-        if (currentElement) {
-          currentElement.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center' 
-          });
-        }
-      }, 100);
-    }
-  }, [currentSong?.id]);
-*/    
+    
   // Filter functions
   const toggleFilter = (item, selectedItems, setSelectedItems) => {
     if (selectedItems.includes(item)) {
@@ -379,7 +360,6 @@ const TamilSongsVisualization = () => {
       {/* Header with Timeline and Search */}
       <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-6 py-4 shadow-lg">
         <div className="flex items-center">
-    
           {/* Title with fixed width */}
           <div style={{ width: '300px' }}>
             <h1 className="text-xl md:text-2xl font-black bg-gradient-to-r from-yellow-200 via-white to-yellow-200 bg-clip-text text-transparent drop-shadow-2xl animate-pulse whitespace-nowrap">
@@ -387,24 +367,22 @@ const TamilSongsVisualization = () => {
             </h1>
           </div>
             
-          {/* Timeline with EXACT middle panel width - no flex-1, no margins */}
-          <div style={{ width: 'calc(100vw - 300px - 320px)' }}>
+          {/* Timeline with EXACT middle panel width */}
+          <div className="flex-1 px-4">
             <div ref={timelineRef} className="timeline-header"></div>
           </div>
           
           {/* Search panel with fixed width */}
-          <div style={{ width: '320px' }} className="flex justify-end">
-            <div style={{ width: '288px' }}>
-              <div className="relative flex items-center">
-                <Search className="absolute left-4 text-white/70 w-5 h-5" />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 transition-all"
-                  placeholder="Search songs, movies, artists..."
-                />
-              </div>
+          <div style={{ width: '320px' }}>
+            <div className="relative flex items-center">
+              <Search className="absolute left-4 text-white/70 w-5 h-5" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 transition-all"
+                placeholder="Search songs, movies, artists..."
+              />
             </div>
           </div>
         </div>
@@ -644,98 +622,98 @@ const TamilSongsVisualization = () => {
           />
         </div>
 
-        {/* Panel 3: Player Controls at Top + Playlist */}
-
-        {/* 1. ENHANCED PLAYER CONTROLS WITH PLAYLIST INFO */}
-        <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
-          {/* Now Playing Info with Playlist Counter */}
-          {currentSong && (
-            <div className="mb-3">
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-blue-600 font-medium">NOW PLAYING</div>
-                <div className="text-xs text-blue-600 font-medium">
-                  {currentSongIndex + 1} of {currentPlaylist.length}
+        {/* Panel 3: Player Controls at Top + Playlist Below */}
+        <div className="w-80 bg-white border-l border-blue-200 flex flex-col">
+          {/* 1. ENHANCED PLAYER CONTROLS WITH PLAYLIST COUNTER */}
+          <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
+            {/* Now Playing Info with Playlist Counter */}
+            {currentSong && (
+              <div className="mb-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-blue-600 font-medium">NOW PLAYING</div>
+                  <div className="text-xs text-blue-600 font-medium">
+                    {currentSongIndex + 1} of {currentPlaylist.length}
+                  </div>
                 </div>
+                <div className="text-sm font-medium text-blue-800 truncate">{currentSong.song}</div>
+                <div className="text-xs text-slate-600 truncate">{currentSong.movie} • {currentSong.singer}</div>
               </div>
-              <div className="text-sm font-medium text-blue-800 truncate">{currentSong.song}</div>
-              <div className="text-xs text-slate-600 truncate">{currentSong.movie} • {currentSong.singer}</div>
+            )}
+
+            {/* Audio Controls */}
+            <div className="flex items-center justify-center gap-3">
+              <button 
+                onClick={() => setIsShuffled(!isShuffled)}
+                className={`p-2 rounded transition-colors ${isShuffled ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50'}`}
+                title="Shuffle"
+              >
+                <Shuffle className="w-4 h-4" />
+              </button>
+              
+              <button 
+                onClick={playPrevious}
+                className="p-2 bg-white text-blue-600 rounded hover:bg-blue-50 transition-colors"
+                disabled={currentPlaylist.length === 0}
+              >
+                <SkipBack className="w-4 h-4" />
+              </button>
+              
+              <button 
+                onClick={togglePlay}
+                className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-lg"
+                disabled={currentPlaylist.length === 0}
+              >
+                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              </button>
+              
+              <button 
+                onClick={playNext}
+                className="p-2 bg-white text-blue-600 rounded hover:bg-blue-50 transition-colors"
+                disabled={currentPlaylist.length === 0}
+              >
+                <SkipForward className="w-4 h-4" />
+              </button>
             </div>
-          )}
-        
-          {/* Audio Controls */}
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <button 
-              onClick={() => setIsShuffled(!isShuffled)}
-              className={`p-2 rounded transition-colors ${isShuffled ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50'}`}
-              title="Shuffle"
-            >
-              <Shuffle className="w-4 h-4" />
-            </button>
-            
-            <button 
-              onClick={playPrevious}
-              className="p-2 bg-white text-blue-600 rounded hover:bg-blue-50 transition-colors"
-              disabled={currentPlaylist.length === 0}
-            >
-              <SkipBack className="w-4 h-4" />
-            </button>
-            
-            <button 
-              onClick={togglePlay}
-              className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-lg"
-              disabled={currentPlaylist.length === 0}
-            >
-              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-            </button>
-            
-            <button 
-              onClick={playNext}
-              className="p-2 bg-white text-blue-600 rounded hover:bg-blue-50 transition-colors"
-              disabled={currentPlaylist.length === 0}
-            >
-              <SkipForward className="w-4 h-4" />
-            </button>
+          </div>
+
+          {/* 2. PLAYLIST WITHOUT HEADING - TAKES REMAINING SPACE */}
+          <div className="flex-1 p-4 overflow-y-auto">
+            <div className="space-y-2">
+              {currentPlaylist.map((song, index) => (
+                <div 
+                  key={song.id} 
+                  data-song-id={song.id} 
+                  className={`p-3 border rounded cursor-pointer transition-all ${
+                    currentSong?.id === song.id 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-blue-100 bg-blue-50/30 hover:bg-blue-50/50'
+                  }`}
+                  onClick={() => setCurrentSongIndex(index)}
+                >
+                  <div className="flex items-center gap-2">
+                    {currentSong?.id === song.id && isPlaying ? (
+                      <div className="w-3 h-3 bg-blue-600 rounded animate-pulse" />
+                    ) : (
+                      <div className="w-3 h-3 bg-slate-300 rounded" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-blue-800 text-sm truncate">{song.song}</h4>
+                      <p className="text-xs text-slate-600 truncate">{song.movie} ({song.year})</p>
+                      <div className="text-xs text-slate-500 space-y-0.5">
+                        <p><span className="font-medium">Composer:</span> {song.composer}</p>
+                        <p><span className="font-medium">Singer:</span> {song.singer}</p>
+                        <p><span className="font-medium">Lyricist:</span> {song.lyricist}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-
-        {/* 2. PLAYLIST TAKES REMAINING SPACE */}
-        <div className="flex-1 p-4 overflow-y-auto">
-           <div className="space-y-2">
-             {currentPlaylist.map((song, index) => (
-               <div 
-                 key={song.id} 
-                 data-song-id={song.id} 
-                 className={`p-3 border rounded cursor-pointer transition-all ${
-                   currentSong?.id === song.id 
-                     ? 'border-blue-500 bg-blue-50' 
-                     : 'border-blue-100 bg-blue-50/30 hover:bg-blue-50/50'
-                 }`}
-                 onClick={() => setCurrentSongIndex(index)}
-               >
-                 <div className="flex items-center gap-2">
-                   {currentSong?.id === song.id && isPlaying ? (
-                     <div className="w-3 h-3 bg-blue-600 rounded animate-pulse" />
-                   ) : (
-                     <div className="w-3 h-3 bg-slate-300 rounded" />
-                   )}
-                   <div className="flex-1 min-w-0">
-                     <h4 className="font-medium text-blue-800 text-sm truncate">{song.song}</h4>
-                     <p className="text-xs text-slate-600 truncate">{song.movie} ({song.year})</p>
-                     <div className="text-xs text-slate-500 space-y-0.5">
-                       <p><span className="font-medium">Composer:</span> {song.composer}</p>
-                       <p><span className="font-medium">Singer:</span> {song.singer}</p>
-                       <p><span className="font-medium">Lyricist:</span> {song.lyricist}</p>
-                     </div>
-                   </div>
-                 </div>
-               </div>
-             ))}
-           </div>
-         </div>
-       </div>
-     </div>
-
- );
+      </div>
+    </div>
+  );
 };
 
 export default TamilSongsVisualization;
