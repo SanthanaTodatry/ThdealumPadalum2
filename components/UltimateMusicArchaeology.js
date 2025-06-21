@@ -211,7 +211,7 @@ const UltimateMusicArchaeology = ({
 	  } else {
 		drawArtistVisualization(svg, filteredArtists[activeTab], activeTab, width, height);
 	  }
-	}, [filteredArtists, activeTab, zoomLevel, highlightedArtist], redrawTrigger]);
+	}, [filteredArtists, activeTab, zoomLevel, highlightedArtist, redrawTrigger]);
 
     // D3 drawing functions (same as before)
     const drawCollaborationNetwork = (svg, collaborations, width, height) => {
