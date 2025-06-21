@@ -452,8 +452,8 @@ const UltimateMusicArchaeology = ({
       </div>
 
       {/* Main Visualization */}
-      <div className="flex-1 bg-white rounded-lg border border-gray-200 p-2 flex flex-col min-h-0"> {/* Add min-h-0 */}
-        <div className="flex-1 w-full rounded-lg border overflow-hidden min-h-0"> {/* Add min-h-0 */}
+      <div className="flex-1 bg-white rounded-lg border border-gray-200 p-2 flex flex-col min-h-0">
+        <div className="flex-1 w-full rounded-lg border overflow-hidden min-h-0">
           {activeTab === 'video' && (
             <div className="h-full w-full min-h-0"> {/* Add min-h-0 */}
               {currentSong ? (
@@ -478,7 +478,7 @@ const UltimateMusicArchaeology = ({
           )}
           
           {activeTab !== 'video' && (
-            <div ref={svgRef} className="h-full w-full"></div>
+            <div ref={svgRef} className="h-full w-full" style={{ minHeight: '300px' }}> </div>
           )}
         </div>
       </div>
