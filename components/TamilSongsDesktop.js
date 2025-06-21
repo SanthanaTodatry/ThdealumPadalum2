@@ -700,18 +700,18 @@ const TamilSongsVisualization = () => {
 
         {/* 2. PLAYLIST TAKES REMAINING SPACE */}
         <div className="flex-1 p-4 overflow-y-auto">
-          <div className="space-y-2">
-            {currentPlaylist.map((song, index) => (
-              <div 
-                key={song.id} 
-                data-song-id={song.id} 
-                className={`p-3 border rounded cursor-pointer transition-all ${
-                  currentSong?.id === song.id 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-blue-100 bg-blue-50/30 hover:bg-blue-50/50'
-                }`}
-                onClick={() => setCurrentSongIndex(index)}
-              >
+           <div className="space-y-2">
+             {currentPlaylist.map((song, index) => (
+               <div 
+                 key={song.id} 
+                 data-song-id={song.id} 
+                 className={`p-3 border rounded cursor-pointer transition-all ${
+                   currentSong?.id === song.id 
+                     ? 'border-blue-500 bg-blue-50' 
+                     : 'border-blue-100 bg-blue-50/30 hover:bg-blue-50/50'
+                 }`}
+                 onClick={() => setCurrentSongIndex(index)}
+               >
                  <div className="flex items-center gap-2">
                    {currentSong?.id === song.id && isPlaying ? (
                      <div className="w-3 h-3 bg-blue-600 rounded animate-pulse" />
@@ -734,6 +734,7 @@ const TamilSongsVisualization = () => {
          </div>
        </div>
      </div>
+   </div>
  );
 };
 
