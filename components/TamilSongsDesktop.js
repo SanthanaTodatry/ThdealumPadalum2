@@ -394,7 +394,7 @@ const TamilSongsVisualization = () => {
           {/* Search panel with fixed width */}
           <div style={{ width: '320px' }}>
             <div className="relative flex items-center">
-              <Search className="absolute left-4 text-white/70 w-5 h-5" />
+              <Search className="absolute left-4 text-white w-5 h-5 z-10" />
               <input
                 type="text"
                 value={searchTerm}
