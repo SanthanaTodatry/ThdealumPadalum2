@@ -186,6 +186,25 @@ const TamilSongsVisualization = () => {
     }
   }, [currentPlaylist.length, currentSongIndex]);
 
+  // Reset to song 1 when filters change
+  useEffect(() => {
+    if (currentPlaylist.length > 0) {
+      setCurrentSongIndex(0); // Always start at song 1 when playlist changes
+    }
+  }, [
+    // These are the filter dependencies that change the playlist
+    searchTerm,
+    selectedYears.length,
+    selectedComposers.length, 
+    selectedSingers.length,
+    selectedLyricists.length,
+    chartFilters.year,
+    chartFilters.singer,
+    chartFilters.composer,
+    chartFilters.lyricist,
+    chartFilters.yearRange
+  ]);
+  
   // Draw compact timeline in header
   useEffect(() => {
     if (!timelineRef.current || !yearData.length) return;
