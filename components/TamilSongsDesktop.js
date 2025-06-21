@@ -213,9 +213,10 @@ const TamilSongsVisualization = () => {
     container.selectAll("*").remove();
   
     const margin = { top: 5, right: 10, bottom: 15, left: 10 };
-    const containerWidth = timelineRef.current.clientWidth;
-    const width = containerWidth - margin.left - margin.right;
-    const height = 40; // Compact height for header
+    // GET MAXIMUM AVAILABLE SPACE
+    const containerWidth = timelineRef.current.getBoundingClientRect().width;
+    const width = Math.max(200, containerWidth - margin.left - margin.right);
+    const height = 40;
   
     const svg = container
       .append("svg")
