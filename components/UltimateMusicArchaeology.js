@@ -162,18 +162,23 @@ const UltimateMusicArchaeology = ({
   }, [artistNetworks, selectedYearRange]);
 
   // Window Resize Listener
-  useEffect(() => {
-    const handleResize = () => {
-      // Force re-render of charts when window resizes
-      if (activeTab !== 'video') {
-        // Trigger the chart drawing useEffect
-        setZoomLevel(prev => prev); // Dummy state change to trigger re-render
-      }
-    };
-  
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [activeTab]);
+	const [redrawTrigger, setRedrawTrigger] = useState(0);
+	useEffect(() => {
+		const handleResize = () => {
+			clearTimeout(window.resizeTimeout);
+			window.resizeTimeout = setTimeout(() => {
+				if (activeTab !== 'video') {
+						setRedrawTrigger(prev => prev + 1); // Clear increment
+				}
+			}, 150);
+		};
+	
+		window.addEventListener('resize', handleResize);
+		return () => {
+			window.removeEventListener('resize', handleResize);
+			clearTimeout(window.resizeTimeout);
+		};
+	}, [activeTab]);
     
 	// Draw main visualization with dynamic sizing
 	useEffect(() => {
@@ -206,7 +211,7 @@ const UltimateMusicArchaeology = ({
 	  } else {
 		drawArtistVisualization(svg, filteredArtists[activeTab], activeTab, width, height);
 	  }
-	}, [filteredArtists, activeTab, zoomLevel, highlightedArtist]);
+	}, [filteredArtists, activeTab, zoomLevel, highlightedArtist], redrawTrigger]);
 
     // D3 drawing functions (same as before)
     const drawCollaborationNetwork = (svg, collaborations, width, height) => {
