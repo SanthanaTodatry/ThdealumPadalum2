@@ -376,25 +376,25 @@ const TamilSongsVisualization = () => {
 
   return (
     <div className="flex flex-col h-screen bg-slate-50 font-light text-slate-700">
-      {/* Header with Timeline and Search */}
+      {/* Header with Timeline and Search - ALIGNED VERSION */}
       <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-6 py-4 shadow-lg">
         <div className="flex items-center">
-          {/* Title with fixed width */}
+          {/* Title with fixed width - UNCHANGED */}
           <div style={{ width: '300px' }}>
             <h1 className="text-xl md:text-2xl font-black bg-gradient-to-r from-yellow-200 via-white to-yellow-200 bg-clip-text text-transparent drop-shadow-2xl animate-pulse whitespace-nowrap">
               தேடலும் பாடலும்
             </h1>
           </div>
             
-          {/* Timeline with EXACT middle panel width */}
-          <div className="flex-1 px-4">
+          {/* Timeline - EXTENDED to match Panel 2 width */}
+          <div className="flex-1">
             <div ref={timelineRef} className="timeline-header"></div>
           </div>
           
-          {/* Search panel with fixed width */}
-          <div style={{ width: '320px' }}>
+          {/* Search - ALIGNED with Panel 3 (320px width) */}
+          <div style={{ width: '320px' }} className="pl-4">
             <div className="relative flex items-center">
-              <Search className="absolute left-4 text-white w-5 h-5 z-10" />
+              <Search className="absolute left-7 text-white w-5 h-5 z-10" />
               <input
                 type="text"
                 value={searchTerm}
