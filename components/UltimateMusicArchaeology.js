@@ -175,50 +175,38 @@ const UltimateMusicArchaeology = ({
     return () => window.removeEventListener('resize', handleResize);
   }, [activeTab]);
     
-  // Draw main visualization - ONLY when NOT on video tab
-  useEffect(() => {
-    if (activeTab === 'video' || !svgRef.current || !filteredArtists[activeTab]) return;
-  
-    const container = d3.select(svgRef.current);
-    container.selectAll("*").remove();
-  
-    // Get actual container dimensions
-    const containerRect = svgRef.current.getBoundingClientRect();
-    const containerHeight = containerRect.height;
-    const containerWidth = containerRect.width;
-    
-    // Responsive sizing based on screen size
-    const isSmallScreen = window.innerWidth < 1024; // Laptop detection
-    const isLargeScreen = window.innerWidth > 1920;  // Large monitor detection
-    
-    // Adaptive width
-    const maxWidth = isSmallScreen ? 600 : (isLargeScreen ? 1200 : 800);
-    const width = Math.min(containerWidth - 40, maxWidth);
-    
-    // Adaptive height - use percentage of container
-    const heightRatio = isSmallScreen ? 0.85 : 0.9; // Use 85% on small screens, 90% on larger
-    const minHeight = isSmallScreen ? 300 : 400;
-    const maxHeight = isLargeScreen ? 800 : 600;
-    
-    const height = Math.min(
-      Math.max(minHeight, containerHeight * heightRatio), 
-      maxHeight
-    );
-  
-    console.log(`Screen: ${window.innerWidth}x${window.innerHeight}, Container: ${containerWidth}x${containerHeight}, Chart: ${width}x${height}`);
-  
-    const svg = container
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .style("display", "block");
-  
-    if (activeTab === 'collaborations') {
-      drawCollaborationNetwork(svg, filteredArtists.collaborations, width, height);
-    } else {
-      drawArtistVisualization(svg, filteredArtists[activeTab], activeTab, width, height);
-    }
-  }, [filteredArtists, activeTab, zoomLevel, highlightedArtist]);
+	// Draw main visualization with dynamic sizing
+	useEffect(() => {
+	  if (activeTab === 'video' || !svgRef.current || !filteredArtists[activeTab]) return;
+
+	  const container = d3.select(svgRef.current);
+	  container.selectAll("*").remove();
+
+	  // GET ACTUAL CONTAINER DIMENSIONS
+	  const containerRect = svgRef.current.getBoundingClientRect();
+	  const containerWidth = containerRect.width;
+	  const containerHeight = containerRect.height;
+	  
+	  // DYNAMIC SIZING - fill container with padding
+	  const padding = 20; // Small padding from edges
+	  const width = Math.max(400, containerWidth - (padding * 2)); // Min 400px
+	  const height = Math.max(300, containerHeight - (padding * 2)); // Min 300px
+
+	  console.log(`Screen: ${window.innerWidth}x${window.innerHeight}, Container: ${containerWidth}x${containerHeight}, Chart: ${width}x${height}`);
+	
+	  const svg = container
+		.append("svg")
+		.attr("width", width)
+		.attr("height", height)
+		.style("display", "block")
+		.style("margin", "0 auto"); // Center if smaller than container
+
+	  if (activeTab === 'collaborations') {
+		drawCollaborationNetwork(svg, filteredArtists.collaborations, width, height);
+	  } else {
+		drawArtistVisualization(svg, filteredArtists[activeTab], activeTab, width, height);
+	  }
+	}, [filteredArtists, activeTab, zoomLevel, highlightedArtist]);
 
     // D3 drawing functions (same as before)
     const drawCollaborationNetwork = (svg, collaborations, width, height) => {
