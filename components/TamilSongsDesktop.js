@@ -734,7 +734,6 @@ const TamilSongsVisualization = () => {
          </div>
        </div>
      </div>
-   </div>
  );
 };
 
