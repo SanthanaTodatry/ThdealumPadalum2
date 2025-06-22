@@ -82,84 +82,100 @@ const UltimateMusicArchaeology = ({
     }
   }, [resetTrigger]);
 
-  // All artists with their collaboration networks
-  const artistNetworks = useMemo(() => {
-    const networks = {
-      collaborations: new Map(),
-      composers: new Map(),
-      singers: new Map(),
-      lyricists: new Map()
-    };
+	const artistNetworks = useMemo(() => {
+	  const networks = {
+	    collaborations: new Map(),
+	    composers: new Map(),
+	    singers: new Map(),
+	    lyricists: new Map()
+	  };
+	
+	  // Add safety check
+	  if (!filteredSongs || !Array.isArray(filteredSongs) || filteredSongs.length === 0) {
+	    return {
+	      collaborations: [],
+	      composers: [],
+	      singers: [],
+	      lyricists: []
+	    };
+	  }
+	
+	  filteredSongs.forEach(song => {
+	    // Add null checks for song properties
+	    if (!song || !song.composer || !song.singer || !song.lyricist || !song.year) {
+	      return; // Skip invalid songs
+	    }
+	
+	    // Collaboration networks
+	    const collabKey = `${song.composer}|${song.singer}|${song.lyricist}`;
+	    if (!networks.collaborations.has(collabKey)) {
+	      networks.collaborations.set(collabKey, {
+	        id: collabKey,
+	        composer: song.composer,
+	        singer: song.singer,
+	        lyricist: song.lyricist,
+	        songs: [],
+	        years: new Set(),
+	        movies: new Set()
+	      });
+	    }
+	    const collab = networks.collaborations.get(collabKey);
+	    collab.songs.push(song);
+	    collab.years.add(song.year);
+	    collab.movies.add(song.movie || 'Unknown');
+	
+	    // Individual artist tracking
+	    [
+	      { type: 'composers', name: song.composer },
+	      { type: 'singers', name: song.singer },
+	      { type: 'lyricists', name: song.lyricist }
+	    ].forEach(({ type, name }) => {
+	      if (!networks[type].has(name)) {
+	        networks[type].set(name, {
+	          name,
+	          songs: [],
+	          collaborators: { composers: new Set(), singers: new Set(), lyricists: new Set() },
+	          activeYears: new Set(),
+	          totalSongs: 0
+	        });
+	      }
+	      const artist = networks[type].get(name);
+	      artist.songs.push(song);
+	      artist.activeYears.add(song.year);
+	      artist.totalSongs += 1;
+	      artist.collaborators.composers.add(song.composer);
+	      artist.collaborators.singers.add(song.singer);
+	      artist.collaborators.lyricists.add(song.lyricist);
+	    });
+	  });
+	
+	  return {
+	    collaborations: Array.from(networks.collaborations.values()),
+	    composers: Array.from(networks.composers.values()),
+	    singers: Array.from(networks.singers.values()),
+	    lyricists: Array.from(networks.lyricists.values())
+	  };
+	}, [filteredSongs]);
 
-    filteredSongs.forEach(song => {
-      // Collaboration networks
-      const collabKey = `${song.composer}|${song.singer}|${song.lyricist}`;
-      if (!networks.collaborations.has(collabKey)) {
-        networks.collaborations.set(collabKey, {
-          id: collabKey,
-          composer: song.composer,
-          singer: song.singer,
-          lyricist: song.lyricist,
-          songs: [],
-          years: new Set(),
-          movies: new Set()
-        });
-      }
-      const collab = networks.collaborations.get(collabKey);
-      collab.songs.push(song);
-      collab.years.add(song.year);
-      collab.movies.add(song.movie);
-
-      // Individual artist tracking
-      [
-        { type: 'composers', name: song.composer },
-        { type: 'singers', name: song.singer },
-        { type: 'lyricists', name: song.lyricist }
-      ].forEach(({ type, name }) => {
-        if (!networks[type].has(name)) {
-          networks[type].set(name, {
-            name,
-            songs: [],
-            collaborators: { composers: new Set(), singers: new Set(), lyricists: new Set() },
-            activeYears: new Set(),
-            totalSongs: 0
-          });
-        }
-        const artist = networks[type].get(name);
-        artist.songs.push(song);
-        artist.activeYears.add(song.year);
-        artist.totalSongs += 1;
-        artist.collaborators.composers.add(song.composer);
-        artist.collaborators.singers.add(song.singer);
-        artist.collaborators.lyricists.add(song.lyricist);
-      });
-    });
-
-    return {
-      collaborations: Array.from(networks.collaborations.values()),
-      composers: Array.from(networks.composers.values()),
-      singers: Array.from(networks.singers.values()),
-      lyricists: Array.from(networks.lyricists.values())
-    };
-  }, [filteredSongs]);
-
-  // Filter by year range
-  const filteredArtists = useMemo(() => {
-    const yearFilter = (artist) => {
-      const activeYears = Array.from(artist.activeYears || []);
-      return activeYears.some(year => year >= selectedYearRange[0] && year <= selectedYearRange[1]);
-    };
-
-    return {
-      collaborations: artistNetworks.collaborations.filter(collab => {
-        const years = Array.from(collab.years);
-        return years.some(year => year >= selectedYearRange[0] && year <= selectedYearRange[1]);
-      }),
-      composers: artistNetworks.composers.filter(artist => yearFilter(artist)),
-      singers: artistNetworks.singers.filter(artist => yearFilter(artist)),
-      lyricists: artistNetworks.lyricists.filter(artist => yearFilter(artist))
-    };
-  }, [artistNetworks, selectedYearRange]);
+	// Filter by year range
+	const filteredArtists = useMemo(() => {
+	  const yearFilter = (artist) => {
+	    if (!artist || !artist.activeYears) return false;
+	    const activeYears = Array.from(artist.activeYears);
+	    return activeYears.some(year => year >= selectedYearRange[0] && year <= selectedYearRange[1]);
+	  };
+	
+	  return {
+	    collaborations: (artistNetworks.collaborations || []).filter(collab => {
+	      if (!collab || !collab.years) return false;
+	      const years = Array.from(collab.years);
+	      return years.some(year => year >= selectedYearRange[0] && year <= selectedYearRange[1]);
+	    }),
+	    composers: (artistNetworks.composers || []).filter(artist => yearFilter(artist)),
+	    singers: (artistNetworks.singers || []).filter(artist => yearFilter(artist)),
+	    lyricists: (artistNetworks.lyricists || []).filter(artist => yearFilter(artist))
+	  };
+	}, [artistNetworks, selectedYearRange]);
 
   // Window Resize Listener
 	const [redrawTrigger, setRedrawTrigger] = useState(0);
@@ -311,20 +327,52 @@ const UltimateMusicArchaeology = ({
       .text("Top Collaborations");
   };
 
-  const drawArtistVisualization = (svg, artists, type, width, height) => {
-    // Create horizontal treemap layout
-    const treemapLayout = d3.treemap()
-      .size([width, height])
-      .padding(2)
-      .paddingTop(20) // Space for category labels
-      .tile(d3.treemapSquarify.ratio(2)); // Ratio 2 = prefer horizontal rectangles
-  
-    // Prepare hierarchical data
-    const root = d3.hierarchy({ children: artists })
-      .sum(d => d.totalSongs || 1)
-      .sort((a, b) => b.value - a.value);
-  
-    treemapLayout(root);
+const drawArtistVisualization = (svg, artists, type, width, height) => {
+  // Add safety check at the beginning
+  if (!artists || !Array.isArray(artists) || artists.length === 0) {
+    // Draw empty state
+    svg.append("text")
+      .attr("x", width / 2)
+      .attr("y", height / 2)
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .style("fill", "#666")
+      .text("No data available");
+    return;
+  }
+
+  // Create horizontal treemap layout
+  const treemapLayout = d3.treemap()
+    .size([width, height])
+    .padding(2)
+    .paddingTop(20) // Space for category labels
+    .tile(d3.treemapSquarify.ratio(2)); // Ratio 2 = prefer horizontal rectangles
+
+  // Prepare hierarchical data with safety checks
+  const validArtists = artists.filter(artist => 
+    artist && 
+    artist.name && 
+    typeof artist.totalSongs === 'number' && 
+    artist.totalSongs > 0
+  );
+
+  if (validArtists.length === 0) {
+    // Draw empty state
+    svg.append("text")
+      .attr("x", width / 2)
+      .attr("y", height / 2)
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .style("fill", "#666")
+      .text("No valid data available");
+    return;
+  }
+
+  const root = d3.hierarchy({ children: validArtists })
+    .sum(d => d.totalSongs || 1)
+    .sort((a, b) => b.value - a.value);
+
+	  treemapLayout(root);
   
     // Color scale
     const colorScale = d3.scaleSequential()
