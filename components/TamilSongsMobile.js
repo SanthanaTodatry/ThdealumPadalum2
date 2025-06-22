@@ -458,7 +458,6 @@ const TamilSongsMobile = () => {
                 : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
             } rounded-lg`}
           >
-            <div className="text-lg font-bold">{selectedYears.length || uniqueYears.length}</div>
             <div className="text-xs">Years</div>
           </button>
           <button
@@ -469,7 +468,6 @@ const TamilSongsMobile = () => {
                 : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
             } rounded-lg`}
           >
-            <div className="text-lg font-bold">{selectedSingers.length || uniqueSingers.length}</div>
             <div className="text-xs">Singers</div>
           </button>
           <button
@@ -480,7 +478,6 @@ const TamilSongsMobile = () => {
                 : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
             } rounded-lg`}
           >
-            <div className="text-lg font-bold">{selectedComposers.length || uniqueComposers.length}</div>
             <div className="text-xs">Composers</div>
           </button>
           <button
@@ -491,7 +488,6 @@ const TamilSongsMobile = () => {
                 : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
             } rounded-lg`}
           >
-            <div className="text-lg font-bold">{selectedLyricists.length || uniqueLyricists.length}</div>
             <div className="text-xs">Lyricists</div>
           </button>
         </div>
