@@ -441,66 +441,59 @@ const TamilSongsMobile = () => {
     </div>
   );
 
-const FilterView = () => {
+  const FilterView = () => {
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-800">Filter Your Music</h3>
-        <button
-          onClick={resetFilters}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-        >
-          <RotateCcw className="w-4 h-4" />
-          Reset All
-        </button>
+    <div className="h-full flex flex-col">
+      {/* Sticky Filter Tabs */}
+      <div className="bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+        <div className="grid grid-cols-4 gap-2">
+          <button
+            onClick={() => setActiveFilterTab('years')}
+            className={`px-3 py-2 text-sm rounded-lg transition-all ${
+              activeFilterTab === 'years' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Years {selectedYears.length > 0 && `(${selectedYears.length})`}
+          </button>
+          <button
+            onClick={() => setActiveFilterTab('singers')}
+            className={`px-3 py-2 text-sm rounded-lg transition-all ${
+              activeFilterTab === 'singers' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Singers {selectedSingers.length > 0 && `(${selectedSingers.length})`}
+          </button>
+          <button
+            onClick={() => setActiveFilterTab('composers')}
+            className={`px-3 py-2 text-sm rounded-lg transition-all ${
+              activeFilterTab === 'composers' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Composers {selectedComposers.length > 0 && `(${selectedComposers.length})`}
+          </button>
+          <button
+            onClick={() => setActiveFilterTab('lyricists')}
+            className={`px-3 py-2 text-sm rounded-lg transition-all ${
+              activeFilterTab === 'lyricists' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Lyricists {selectedLyricists.length > 0 && `(${selectedLyricists.length})`}
+          </button>
+        </div>
       </div>
-
-      {/* Filter Tabs */}
-      <div className="grid grid-cols-2 gap-2">
-        <button
-          onClick={() => setActiveFilterTab('years')}
-          className={`px-3 py-2 text-sm rounded-lg transition-all ${
-            activeFilterTab === 'years' 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          Years {selectedYears.length > 0 && `(${selectedYears.length})`}
-        </button>
-        <button
-          onClick={() => setActiveFilterTab('singers')}
-          className={`px-3 py-2 text-sm rounded-lg transition-all ${
-            activeFilterTab === 'singers' 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          Singers {selectedSingers.length > 0 && `(${selectedSingers.length})`}
-        </button>
-        <button
-          onClick={() => setActiveFilterTab('composers')}
-          className={`px-3 py-2 text-sm rounded-lg transition-all ${
-            activeFilterTab === 'composers' 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          Composers {selectedComposers.length > 0 && `(${selectedComposers.length})`}
-        </button>
-        <button
-          onClick={() => setActiveFilterTab('lyricists')}
-          className={`px-3 py-2 text-sm rounded-lg transition-all ${
-            activeFilterTab === 'lyricists' 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          Lyricists {selectedLyricists.length > 0 && `(${selectedLyricists.length})`}
-        </button>
-      </div>
-
-      {/* Filter Content */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 min-h-96">
+  
+      {/* Scrollable Filter Content */}
+      <div className="flex-1 p-4 overflow-y-auto">
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+        
         {/* Years Tab */}
         {activeFilterTab === 'years' && (
           <div>
@@ -674,13 +667,6 @@ const FilterView = () => {
         )}
       </div>
 
-      {/* Results Summary */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-blue-600">{filteredSongs.length}</div>
-          <div className="text-sm text-gray-600">songs match your filters</div>
-        </div>
-      </div>
     </div>
   );
 };
@@ -706,12 +692,6 @@ const ChartsView = () => (
 
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Your Playlist ({sortedPlaylist.length})
-          </h3>
-        </div>
-        
         <div className="space-y-3">
           {sortedPlaylist.map((song, index) => (
             <div 
@@ -771,50 +751,50 @@ const ChartsView = () => (
             <div className="text-xs text-white/80">Songs</div>
           </div>
           <div>
-            <div className="text-lg font-bold text-white">{uniqueSingers.length}</div>
+            <div className="text-lg font-bold text-white">{[...new Set(filteredSongs.map(s => s.singer))].length}</div>
             <div className="text-xs text-white/80">Singers</div>
           </div>
           <div>
-            <div className="text-lg font-bold text-white">{uniqueComposers.length}</div>
+            <div className="text-lg font-bold text-white">{[...new Set(filteredSongs.map(s => s.composer))].length}</div>
             <div className="text-xs text-white/80">Composers</div>
           </div>
           <div>
-            <div className="text-lg font-bold text-white">{uniqueLyricists.length}</div>
+            <div className="text-lg font-bold text-white">{[...new Set(filteredSongs.map(s => s.lyricist))].length}</div>
             <div className="text-xs text-white/80">Lyricists</div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-4 overflow-y-auto">
         {currentView === 'home' && <HomeView />}
         {currentView === 'filter' && <FilterView />}
         {currentView === 'charts' && <ChartsView />}
         {currentView === 'playlist' && <PlaylistView />}
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="bg-white border-t border-gray-200 px-4 py-2 sticky bottom-0">
-
+      {/* Bottom Navigation with Search */}
+      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 border-t border-white/20 px-4 py-2 sticky bottom-0">
         {/* Search - Available on all pages */}
         <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-4 h-4" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full pl-10 pr-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 focus:border-white/50"
             placeholder="Search songs, artists..."
           />
         </div>
         
+        {/* Navigation Buttons */}
         <div className="flex justify-around">
           <button
             onClick={() => setCurrentView('home')}
             className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all ${
               currentView === 'home' 
-                ? 'text-blue-600 bg-blue-50' 
-                : 'text-gray-600'
+                ? 'text-yellow-300 bg-white/20' 
+                : 'text-white/80 hover:text-white hover:bg-white/10'
             }`}
           >
             <Home className="w-5 h-5 mb-1" />
@@ -825,8 +805,8 @@ const ChartsView = () => (
             onClick={() => setCurrentView('filter')}
             className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all ${
               currentView === 'filter' 
-                ? 'text-blue-600 bg-blue-50' 
-                : 'text-gray-600'
+                ? 'text-yellow-300 bg-white/20' 
+                : 'text-white/80 hover:text-white hover:bg-white/10'
             }`}
           >
             <svg className="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -839,8 +819,8 @@ const ChartsView = () => (
             onClick={() => setCurrentView('charts')}
             className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all ${
               currentView === 'charts' 
-                ? 'text-blue-600 bg-blue-50' 
-                : 'text-gray-600'
+                ? 'text-yellow-300 bg-white/20' 
+                : 'text-white/80 hover:text-white hover:bg-white/10'
             }`}
           >
             <BarChart3 className="w-5 h-5 mb-1" />
@@ -851,12 +831,20 @@ const ChartsView = () => (
             onClick={() => setCurrentView('playlist')}
             className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all ${
               currentView === 'playlist' 
-                ? 'text-blue-600 bg-blue-50' 
-                : 'text-gray-600'
+                ? 'text-yellow-300 bg-white/20' 
+                : 'text-white/80 hover:text-white hover:bg-white/10'
             }`}
           >
             <Music className="w-5 h-5 mb-1" />
             <span className="text-xs">Playlist</span>
+          </button>
+          
+          <button
+            onClick={resetFilters}
+            className="flex flex-col items-center py-2 px-3 rounded-lg transition-all text-white/80 hover:text-white hover:bg-white/10"
+          >
+            <RotateCcw className="w-5 h-5 mb-1" />
+            <span className="text-xs">Reset</span>
           </button>
         </div>
       </div>
