@@ -365,26 +365,6 @@ const TamilSongsMobile = () => {
   // Mobile Views
   const HomeView = () => (
     <div className="space-y-4">
-      {/* 4 Cards - Blue, Purple, Green, Red */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-xl">
-          <div className="text-2xl font-bold">{filteredSongs.length}</div>
-          <div className="text-blue-100 text-sm">Songs</div>
-        </div>
-        <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-xl">
-          <div className="text-2xl font-bold">{uniqueSingers.length}</div>
-          <div className="text-purple-100 text-sm">Singers</div>
-        </div>
-        <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-xl">
-          <div className="text-2xl font-bold">{uniqueComposers.length}</div>
-          <div className="text-green-100 text-sm">Composers</div>
-        </div>
-        <div className="bg-gradient-to-r from-red-500 to-red-600 text-white p-4 rounded-xl">
-          <div className="text-2xl font-bold">{uniqueLyricists.length}</div>
-          <div className="text-red-100 text-sm">Lyricists</div>
-        </div>
-      </div>
-
       {/* Current Playing - Clean Layout */}
       {currentSong && (
         <div className="bg-gradient-to-r from-sky-400 to-sky-500 text-white rounded-xl overflow-hidden">
@@ -777,22 +757,31 @@ const ChartsView = () => (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-4 py-4 sticky top-0 z-50">
-        <div className="flex items-center justify-between mb-4">
+        {/* Centered Tamil Title */}
+        <div className="text-center mb-4">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent animate-pulse">
             தேடலும் பாடலும்
           </h1>
         </div>
         
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-4 h-4" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/70 focus:ring-2 focus:ring-white/50"
-            placeholder="Search songs, artists..."
-          />
+        {/* Stats Row - Always visible across all pages */}
+        <div className="grid grid-cols-4 gap-2 text-center">
+          <div>
+            <div className="text-lg font-bold text-white">{filteredSongs.length}</div>
+            <div className="text-xs text-white/80">Songs</div>
+          </div>
+          <div>
+            <div className="text-lg font-bold text-white">{uniqueSingers.length}</div>
+            <div className="text-xs text-white/80">Singers</div>
+          </div>
+          <div>
+            <div className="text-lg font-bold text-white">{uniqueComposers.length}</div>
+            <div className="text-xs text-white/80">Composers</div>
+          </div>
+          <div>
+            <div className="text-lg font-bold text-white">{uniqueLyricists.length}</div>
+            <div className="text-xs text-white/80">Lyricists</div>
+          </div>
         </div>
       </div>
 
@@ -806,6 +795,19 @@ const ChartsView = () => (
 
       {/* Bottom Navigation */}
       <div className="bg-white border-t border-gray-200 px-4 py-2 sticky bottom-0">
+
+        {/* Search - Available on all pages */}
+        <div className="relative mb-3">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Search songs, artists..."
+          />
+        </div>
+        
         <div className="flex justify-around">
           <button
             onClick={() => setCurrentView('home')}
