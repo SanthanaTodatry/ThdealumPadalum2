@@ -449,7 +449,7 @@ const TamilSongsMobile = () => {
         <div className="text-center mb-2">
           <span className="text-xs text-gray-600 font-medium">Filter By</span>
         </div>
-        <div className="grid grid-cols-4 gap-2 px-4">
+        <div className="grid grid-cols-4 gap-2">
           <button
             onClick={() => setActiveFilterTab('years')}
             className={`py-2 text-center transition-all ${
