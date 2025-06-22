@@ -445,52 +445,58 @@ const TamilSongsMobile = () => {
   return (
     <div className="h-full flex flex-col">
       {/* Sticky Filter Tabs */}
-      {/* Sticky Filter Tabs */}
-      <div className="sticky top-0 z-10">
-        <div className="bg-white border-b border-gray-200 p-4 grid grid-cols-4 gap-2">    
+      <div className="bg-white border-b border-gray-200 py-2 sticky top-0 z-10">
+        <div className="text-center mb-2">
+          <span className="text-xs text-gray-600 font-medium">Filter By</span>
+        </div>
+        <div className="grid grid-cols-4 gap-2 px-4">
           <button
             onClick={() => setActiveFilterTab('years')}
-            className={`px-3 py-2 text-sm rounded-lg transition-all ${
+            className={`py-2 text-center transition-all ${
               activeFilterTab === 'years' 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+                ? 'text-yellow-300 bg-purple-600' 
+                : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+            } rounded-lg`}
           >
-            Years {selectedYears.length > 0 && `(${selectedYears.length})`}
+            <div className="text-lg font-bold">{selectedYears.length || uniqueYears.length}</div>
+            <div className="text-xs">Years</div>
           </button>
           <button
             onClick={() => setActiveFilterTab('singers')}
-            className={`px-3 py-2 text-sm rounded-lg transition-all ${
+            className={`py-2 text-center transition-all ${
               activeFilterTab === 'singers' 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+                ? 'text-yellow-300 bg-blue-600' 
+                : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+            } rounded-lg`}
           >
-            Singers {selectedSingers.length > 0 && `(${selectedSingers.length})`}
+            <div className="text-lg font-bold">{selectedSingers.length || uniqueSingers.length}</div>
+            <div className="text-xs">Singers</div>
           </button>
           <button
             onClick={() => setActiveFilterTab('composers')}
-            className={`px-3 py-2 text-sm rounded-lg transition-all ${
+            className={`py-2 text-center transition-all ${
               activeFilterTab === 'composers' 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+                ? 'text-yellow-300 bg-blue-600' 
+                : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+            } rounded-lg`}
           >
-            Composers {selectedComposers.length > 0 && `(${selectedComposers.length})`}
+            <div className="text-lg font-bold">{selectedComposers.length || uniqueComposers.length}</div>
+            <div className="text-xs">Composers</div>
           </button>
           <button
             onClick={() => setActiveFilterTab('lyricists')}
-            className={`px-3 py-2 text-sm rounded-lg transition-all ${
+            className={`py-2 text-center transition-all ${
               activeFilterTab === 'lyricists' 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+                ? 'text-yellow-300 bg-teal-600' 
+                : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+            } rounded-lg`}
           >
-            Lyricists {selectedLyricists.length > 0 && `(${selectedLyricists.length})`}
+            <div className="text-lg font-bold">{selectedLyricists.length || uniqueLyricists.length}</div>
+            <div className="text-xs">Lyricists</div>
           </button>
         </div>
       </div>
-  
+
       {/* Scrollable Filter Content */}
       <div className="flex-1 p-4 overflow-y-auto">
         <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -498,7 +504,6 @@ const TamilSongsMobile = () => {
         {/* Years Tab */}
         {activeFilterTab === 'years' && (
           <div>
-            <h4 className="text-sm font-medium text-gray-800 mb-3">Select Years by Decade</h4>
             <div className="space-y-3">
               {(() => {
                 const decades = {};
@@ -563,7 +568,6 @@ const TamilSongsMobile = () => {
         {/* Singers Tab */}
         {activeFilterTab === 'singers' && (
           <div>
-            <h4 className="text-sm font-medium text-gray-800 mb-3">Select Singers</h4>
             <div className="grid grid-cols-1 gap-2">
               {uniqueSingers.map(singer => (
                 <FilterButton
@@ -581,7 +585,6 @@ const TamilSongsMobile = () => {
         {/* Composers Tab */}
         {activeFilterTab === 'composers' && (
           <div>
-            <h4 className="text-sm font-medium text-gray-800 mb-3">Select Composers</h4>
             <div className="grid grid-cols-1 gap-2">
               {uniqueComposers.map(composer => (
                 <FilterButton
@@ -599,7 +602,6 @@ const TamilSongsMobile = () => {
         {/* Lyricists Tab */}
         {activeFilterTab === 'lyricists' && (
           <div>
-            <h4 className="text-sm font-medium text-gray-800 mb-3">Select Lyricists</h4>
             <div className="grid grid-cols-1 gap-2">
               {uniqueLyricists.map(lyricist => (
                 <FilterButton
