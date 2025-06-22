@@ -445,8 +445,9 @@ const TamilSongsMobile = () => {
   return (
     <div className="h-full flex flex-col">
       {/* Sticky Filter Tabs */}
-      <div className="bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
-        <div className="grid grid-cols-4 gap-2">
+      {/* Sticky Filter Tabs */}
+      <div className="sticky top-0 z-10">
+        <div className="bg-white border-b border-gray-200 p-4 grid grid-cols-4 gap-2">    
           <button
             onClick={() => setActiveFilterTab('years')}
             className={`px-3 py-2 text-sm rounded-lg transition-all ${
