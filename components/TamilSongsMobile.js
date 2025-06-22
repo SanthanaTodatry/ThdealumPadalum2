@@ -776,7 +776,7 @@ const ChartsView = () => (
       <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 border-t border-white/20 px-4 py-2 sticky bottom-0">
         {/* Search - Available on all pages */}
         <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-4 h-4" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white w-4 h-4 z-10" />
           <input
             type="text"
             value={searchTerm}
