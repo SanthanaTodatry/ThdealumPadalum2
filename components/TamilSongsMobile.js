@@ -328,6 +328,22 @@ const TamilSongsMobile = () => {
     }));
   };
 
+  const handleComposerClick = (data) => {
+    const composer = data?.name;
+    setChartFilters(prev => ({ 
+      ...prev, 
+      composer: prev.composer === composer ? null : composer 
+    }));
+  };
+
+  const handleLyricistClick = (data) => {
+    const lyricist = data?.name;
+    setChartFilters(prev => ({ 
+      ...prev, 
+      lyricist: prev.lyricist === lyricist ? null : lyricist 
+    }));
+  };
+  
   // Colors - matching desktop version
   const SINGER_COLORS = ['#7c3aed', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe'];
   const COMPOSER_COLORS = ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5'];
@@ -445,18 +461,18 @@ const TamilSongsMobile = () => {
     </div>
   );
 
-    const ChartsView = () => (
-      <div className="space-y-6">
-        <StunningVisualizations 
-          filteredSongs={filteredSongs}
-          onYearClick={handleYearClick}
-          onSingerClick={handleSingerClick}
-          onComposerClick={handleComposerClick}
-          onLyricistClick={handleLyricistClick}
-          chartFilters={chartFilters}
-        />
-      </div>
-    );
+const ChartsView = () => (
+  <div className="space-y-6">
+    <StunningVisualizations 
+      filteredSongs={filteredSongs}
+      onYearClick={handleYearClick}
+      onSingerClick={handleSingerClick}
+      onComposerClick={handleComposerClick}
+      onLyricistClick={handleLyricistClick}
+      chartFilters={chartFilters}
+    />
+  </div>
+);
 
   const PlaylistView = () => {
     // Sort playlist by song name
