@@ -498,7 +498,7 @@ const TamilSongsMobile = () => {
       </div>
 
       {/* Scrollable Filter Content */}
-      <div className="flex-1 p-4 overflow-y-auto">
+      <div className="flex-1 p-4">
         <div className="bg-white rounded-lg border border-gray-200 p-4">
         
         {/* Years Tab */}
