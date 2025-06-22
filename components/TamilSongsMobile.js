@@ -486,12 +486,6 @@ const ChartsView = () => (
           <h3 className="text-lg font-semibold text-gray-800">
             Your Playlist ({sortedPlaylist.length})
           </h3>
-          <button
-            onClick={() => setShowFilters(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm"
-          >
-            Filters
-          </button>
         </div>
         
         <div className="space-y-3">
@@ -543,12 +537,6 @@ const ChartsView = () => (
           <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent animate-pulse">
             தேடலும் பாடலும்
           </h1>
-          <button
-            onClick={() => setShowFilters(true)}
-            className="p-2 bg-white/20 rounded-lg"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
         </div>
         
         {/* Search */}
@@ -576,7 +564,7 @@ const ChartsView = () => (
         <div className="flex justify-around">
           <button
             onClick={() => setCurrentView('home')}
-            className={`flex flex-col items-center py-2 px-4 rounded-lg transition-all ${
+            className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all ${
               currentView === 'home' 
                 ? 'text-blue-600 bg-blue-50' 
                 : 'text-gray-600'
@@ -587,30 +575,44 @@ const ChartsView = () => (
           </button>
           
           <button
+            onClick={() => setShowFilters(true)}
+            className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all ${
+              showFilters 
+                ? 'text-blue-600 bg-blue-50' 
+                : 'text-gray-600'
+            }`}
+          >
+            <svg className="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+            </svg>
+            <span className="text-xs">Filter</span>
+          </button>
+          
+          <button
             onClick={() => setCurrentView('charts')}
-            className={`flex flex-col items-center py-2 px-4 rounded-lg transition-all ${
+            className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all ${
               currentView === 'charts' 
                 ? 'text-blue-600 bg-blue-50' 
                 : 'text-gray-600'
- }`}
-         >
-           <BarChart3 className="w-5 h-5 mb-1" />
-           <span className="text-xs">Charts</span>
-         </button>
-         
-         <button
-           onClick={() => setCurrentView('playlist')}
-           className={`flex flex-col items-center py-2 px-4 rounded-lg transition-all ${
-             currentView === 'playlist' 
-               ? 'text-blue-600 bg-blue-50' 
-               : 'text-gray-600'
-           }`}
-         >
-           <Music className="w-5 h-5 mb-1" />
-           <span className="text-xs">Playlist</span>
-         </button>
-       </div>
-     </div>
+            }`}
+          >
+            <BarChart3 className="w-5 h-5 mb-1" />
+            <span className="text-xs">Charts</span>
+          </button>
+          
+          <button
+            onClick={() => setCurrentView('playlist')}
+            className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all ${
+              currentView === 'playlist' 
+                ? 'text-blue-600 bg-blue-50' 
+                : 'text-gray-600'
+            }`}
+          >
+            <Music className="w-5 h-5 mb-1" />
+            <span className="text-xs">Playlist</span>
+          </button>
+        </div>
+      </div>
 
      {/* Filter Sidebar */}
      {showFilters && (
