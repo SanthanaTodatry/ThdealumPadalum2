@@ -443,7 +443,7 @@ const TamilSongsMobile = () => {
 
   const FilterView = () => {
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col overflow-y-auto">
       {/* Sticky Filter Tabs */}
       <div className="bg-white border-b border-gray-200 py-2 sticky top-0 z-10">
         <div className="text-center mb-2">
@@ -494,9 +494,9 @@ const TamilSongsMobile = () => {
       </div>
 
       {/* Scrollable Filter Content */}
-      <div className="p-4">
+      <div className="flex-1 p-4">
         <div className="bg-white rounded-lg border border-gray-200 p-4">
-  
+        
         {/* Years Tab */}
         {activeFilterTab === 'years' && (
           <div>
@@ -735,7 +735,7 @@ const ChartsView = () => (
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-4 py-4">
+      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-4 py-4 sticky top-0 z-50">
         {/* Centered Tamil Title */}
         <div className="text-center mb-4">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent animate-pulse">
@@ -765,19 +765,15 @@ const ChartsView = () => (
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto">
-          <div className="p-4">
-            {currentView === 'home' && <HomeView />}
-            {currentView === 'filter' && <FilterView />}
-            {currentView === 'charts' && <ChartsView />}
-            {currentView === 'playlist' && <PlaylistView />}
-          </div>
-        </div>
+      <div className="flex-1 p-4">
+        {currentView === 'home' && <HomeView />}
+        {currentView === 'filter' && <FilterView />}
+        {currentView === 'charts' && <ChartsView />}
+        {currentView === 'playlist' && <PlaylistView />}
       </div>
 
       {/* Bottom Navigation with Search */}
-      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 border-t border-white/20 px-4 py-2">
+      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 border-t border-white/20 px-4 py-2 sticky bottom-0">
         {/* Search - Available on all pages */}
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-4 h-4" />
