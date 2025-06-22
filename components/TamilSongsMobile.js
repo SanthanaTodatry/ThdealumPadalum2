@@ -443,7 +443,7 @@ const TamilSongsMobile = () => {
 
   const FilterView = () => {
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col overflow-y-auto">
       {/* Sticky Filter Tabs */}
       <div className="bg-white border-b border-gray-200 py-2 sticky top-0 z-10">
         <div className="text-center mb-2">
@@ -765,7 +765,7 @@ const ChartsView = () => (
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4 overflow-y-auto">
+      <div className="flex-1 p-4">
         {currentView === 'home' && <HomeView />}
         {currentView === 'filter' && <FilterView />}
         {currentView === 'charts' && <ChartsView />}
