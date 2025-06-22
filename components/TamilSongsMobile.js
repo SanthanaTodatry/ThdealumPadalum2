@@ -461,6 +461,250 @@ const TamilSongsMobile = () => {
     </div>
   );
 
+const FilterView = () => {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-800">Filter Your Music</h3>
+        <button
+          onClick={resetFilters}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+        >
+          <RotateCcw className="w-4 h-4" />
+          Reset All
+        </button>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={() => setActiveFilterTab('years')}
+          className={`px-3 py-2 text-sm rounded-lg transition-all ${
+            activeFilterTab === 'years' 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          Years {selectedYears.length > 0 && `(${selectedYears.length})`}
+        </button>
+        <button
+          onClick={() => setActiveFilterTab('singers')}
+          className={`px-3 py-2 text-sm rounded-lg transition-all ${
+            activeFilterTab === 'singers' 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          Singers {selectedSingers.length > 0 && `(${selectedSingers.length})`}
+        </button>
+        <button
+          onClick={() => setActiveFilterTab('composers')}
+          className={`px-3 py-2 text-sm rounded-lg transition-all ${
+            activeFilterTab === 'composers' 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          Composers {selectedComposers.length > 0 && `(${selectedComposers.length})`}
+        </button>
+        <button
+          onClick={() => setActiveFilterTab('lyricists')}
+          className={`px-3 py-2 text-sm rounded-lg transition-all ${
+            activeFilterTab === 'lyricists' 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          Lyricists {selectedLyricists.length > 0 && `(${selectedLyricists.length})`}
+        </button>
+      </div>
+
+      {/* Filter Content */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4 min-h-96">
+        {/* Years Tab */}
+        {activeFilterTab === 'years' && (
+          <div>
+            <h4 className="text-sm font-medium text-gray-800 mb-3">Select Years by Decade</h4>
+            <div className="space-y-3">
+              {(() => {
+                const decades = {};
+                uniqueYears.forEach(year => {
+                  const decade = Math.floor(year / 10) * 10;
+                  if (!decades[decade]) decades[decade] = [];
+                  decades[decade].push(year);
+                });
+                
+                return Object.entries(decades)
+                  .sort(([a], [b]) => parseInt(a) - parseInt(b))
+                  .map(([decade, years]) => {
+                    const decadeInt = parseInt(decade);
+                    const decadeYears = years.sort((a, b) => a - b);
+                    const selectedInDecade = decadeYears.filter(year => selectedYears.includes(year));
+                    const allDecadeSelected = selectedInDecade.length === decadeYears.length;
+                    
+                    return (
+                      <div key={decade} className="border border-gray-200 rounded-lg p-3">
+                        <button
+                          onClick={() => {
+                            if (allDecadeSelected) {
+                              setSelectedYears(prev => prev.filter(year => !decadeYears.includes(year)));
+                            } else {
+                              setSelectedYears(prev => [...new Set([...prev, ...decadeYears])]);
+                            }
+                          }}
+                          className={`w-full p-2 rounded-md text-sm font-semibold transition-all ${
+                            selectedInDecade.length > 0
+                              ? allDecadeSelected
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-blue-100 text-blue-800 border border-blue-300'
+                              : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          {decadeInt}s
+                        </button>
+                        
+                        <div className="mt-2 grid grid-cols-4 gap-1">
+                          {decadeYears.map(year => (
+                            <button
+                              key={year}
+                              onClick={() => toggleFilter(year, selectedYears, setSelectedYears)}
+                              className={`px-2 py-1 text-xs rounded border transition-all ${
+                                selectedYears.includes(year)
+                                  ? 'bg-blue-500 text-white border-blue-500'
+                                  : 'bg-white text-blue-600 border-blue-200 hover:border-blue-400 hover:bg-blue-50'
+                              }`}
+                            >
+                              {year.toString().slice(-2)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  });
+              })()}
+            </div>
+          </div>
+        )}
+
+        {/* Singers Tab */}
+        {activeFilterTab === 'singers' && (
+          <div>
+            <h4 className="text-sm font-medium text-gray-800 mb-3">Select Singers</h4>
+            <div className="grid grid-cols-1 gap-2">
+              {uniqueSingers.map(singer => (
+                <FilterButton
+                  key={singer}
+                  active={selectedSingers.includes(singer)}
+                  onClick={() => toggleFilter(singer, selectedSingers, setSelectedSingers)}
+                >
+                  {singer}
+                </FilterButton>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Composers Tab */}
+        {activeFilterTab === 'composers' && (
+          <div>
+            <h4 className="text-sm font-medium text-gray-800 mb-3">Select Composers</h4>
+            <div className="grid grid-cols-1 gap-2">
+              {uniqueComposers.map(composer => (
+                <FilterButton
+                  key={composer}
+                  active={selectedComposers.includes(composer)}
+                  onClick={() => toggleFilter(composer, selectedComposers, setSelectedComposers)}
+                >
+                  {composer}
+                </FilterButton>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Lyricists Tab */}
+        {activeFilterTab === 'lyricists' && (
+          <div>
+            <h4 className="text-sm font-medium text-gray-800 mb-3">Select Lyricists</h4>
+            <div className="grid grid-cols-1 gap-2">
+              {uniqueLyricists.map(lyricist => (
+                <FilterButton
+                  key={lyricist}
+                  active={selectedLyricists.includes(lyricist)}
+                  onClick={() => toggleFilter(lyricist, selectedLyricists, setSelectedLyricists)}
+                >
+                  {lyricist}
+                </FilterButton>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Active Chart Filters Display */}
+        {(chartFilters.year || chartFilters.singer || chartFilters.composer || chartFilters.lyricist) && (
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <h4 className="text-sm font-medium text-gray-800 mb-2">Chart Filters</h4>
+            <div className="space-y-2">
+              {chartFilters.year && (
+                <div className="flex items-center justify-between bg-blue-100 px-3 py-2 rounded-lg">
+                  <span className="text-sm">Year: {chartFilters.year}</span>
+                  <button 
+                    onClick={() => setChartFilters(prev => ({ ...prev, year: null }))} 
+                    className="text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+              {chartFilters.singer && (
+                <div className="flex items-center justify-between bg-blue-100 px-3 py-2 rounded-lg">
+                  <span className="text-sm">Singer: {chartFilters.singer}</span>
+                  <button 
+                    onClick={() => setChartFilters(prev => ({ ...prev, singer: null }))} 
+                    className="text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+              {chartFilters.composer && (
+                <div className="flex items-center justify-between bg-blue-100 px-3 py-2 rounded-lg">
+                  <span className="text-sm">Composer: {chartFilters.composer}</span>
+                  <button 
+                    onClick={() => setChartFilters(prev => ({ ...prev, composer: null }))} 
+                    className="text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+              {chartFilters.lyricist && (
+                <div className="flex items-center justify-between bg-blue-100 px-3 py-2 rounded-lg">
+                  <span className="text-sm">Lyricist: {chartFilters.lyricist}</span>
+                  <button 
+                    onClick={() => setChartFilters(prev => ({ ...prev, lyricist: null }))} 
+                    className="text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Results Summary */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-blue-600">{filteredSongs.length}</div>
+          <div className="text-sm text-gray-600">songs match your filters</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ChartsView = () => (
   <div className="space-y-6">
     <StunningVisualizations 
@@ -555,6 +799,7 @@ const ChartsView = () => (
       {/* Main Content */}
       <div className="flex-1 p-4">
         {currentView === 'home' && <HomeView />}
+        {currentView === 'filter' && <FilterView />}
         {currentView === 'charts' && <ChartsView />}
         {currentView === 'playlist' && <PlaylistView />}
       </div>
@@ -575,9 +820,9 @@ const ChartsView = () => (
           </button>
           
           <button
-            onClick={() => setShowFilters(true)}
+            onClick={() => setCurrentView('filter')}
             className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all ${
-              showFilters 
+              currentView === 'filter' 
                 ? 'text-blue-600 bg-blue-50' 
                 : 'text-gray-600'
             }`}
@@ -613,278 +858,6 @@ const ChartsView = () => (
           </button>
         </div>
       </div>
-
-     {/* Filter Sidebar */}
-     {showFilters && (
-       <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowFilters(false)}>
-         <div 
-           className="absolute right-0 top-0 h-full w-80 bg-white shadow-xl transform transition-transform"
-           onClick={(e) => e.stopPropagation()}
-         >
-           {/* Filter Header */}
-           <div className="p-4 border-b border-gray-200 bg-blue-600 text-white">
-             <div className="flex items-center justify-between">
-               <h3 className="text-lg font-semibold">Filters</h3>
-               <button
-                 onClick={() => setShowFilters(false)}
-                 className="p-1 hover:bg-white/20 rounded"
-               >
-                 <X className="w-5 h-5" />
-               </button>
-             </div>
-           </div>
-
-           {/* Filter Content */}
-           <div className="flex flex-col h-full">
-             <div className="p-4 border-b border-gray-200">
-               {/* Reset Button */}
-               <button
-                 onClick={resetFilters}
-                 className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm mb-4"
-               >
-                 <RotateCcw className="w-4 h-4" />
-                 Reset All Filters
-               </button>
-
-               {/* Filter Tabs */}
-               <div className="grid grid-cols-2 gap-2">
-                 <button
-                   onClick={() => setActiveFilterTab('years')}
-                   className={`px-3 py-2 text-sm rounded-lg transition-all ${
-                     activeFilterTab === 'years' 
-                       ? 'bg-blue-600 text-white' 
-                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                   }`}
-                 >
-                   Years {selectedYears.length > 0 && `(${selectedYears.length})`}
-                 </button>
-                 <button
-                   onClick={() => setActiveFilterTab('singers')}
-                   className={`px-3 py-2 text-sm rounded-lg transition-all ${
-                     activeFilterTab === 'singers' 
-                       ? 'bg-blue-600 text-white' 
-                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                   }`}
-                 >
-                   Singers {selectedSingers.length > 0 && `(${selectedSingers.length})`}
-                 </button>
-                 <button
-                   onClick={() => setActiveFilterTab('composers')}
-                   className={`px-3 py-2 text-sm rounded-lg transition-all ${
-                     activeFilterTab === 'composers' 
-                       ? 'bg-blue-600 text-white' 
-                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                   }`}
-                 >
-                   Composers {selectedComposers.length > 0 && `(${selectedComposers.length})`}
-                 </button>
-                 <button
-                   onClick={() => setActiveFilterTab('lyricists')}
-                   className={`px-3 py-2 text-sm rounded-lg transition-all ${
-                     activeFilterTab === 'lyricists' 
-                       ? 'bg-blue-600 text-white' 
-                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                   }`}
-                 >
-                   Lyricists {selectedLyricists.length > 0 && `(${selectedLyricists.length})`}
-                 </button>
-               </div>
-             </div>
-
-             {/* Filter Options */}
-             <div className="flex-1 p-4 overflow-y-auto">
-               
-             {/* Years Tab */}
-               {activeFilterTab === 'years' && (
-                 <div>
-                   <h4 className="text-sm font-medium text-gray-800 mb-3">Select Years by Decade</h4>
-                   <div className="space-y-3">
-                     {/* Group years by decade */}
-                     {(() => {
-                       const decades = {};
-                       uniqueYears.forEach(year => {
-                         const decade = Math.floor(year / 10) * 10;
-                         if (!decades[decade]) decades[decade] = [];
-                         decades[decade].push(year);
-                       });
-                       
-                       return Object.entries(decades)
-                         .sort(([a], [b]) => parseInt(a) - parseInt(b))
-                         .map(([decade, years]) => {
-                           const decadeInt = parseInt(decade);
-                           const decadeYears = years.sort((a, b) => a - b);
-                           const selectedInDecade = decadeYears.filter(year => selectedYears.includes(year));
-                           const allDecadeSelected = selectedInDecade.length === decadeYears.length;
-                           
-                           return (
-                             <div key={decade} className="border border-gray-200 rounded-lg p-3">
-                               {/* Decade Header Button */}
-                               <button
-                                 onClick={() => {
-                                   if (allDecadeSelected) {
-                                     // Remove all years in this decade
-                                     setSelectedYears(prev => prev.filter(year => !decadeYears.includes(year)));
-                                   } else {
-                                     // Add all years in this decade
-                                     setSelectedYears(prev => [...new Set([...prev, ...decadeYears])]);
-                                   }
-                                 }}
-                                 className={`w-full p-2 rounded-md text-sm font-semibold transition-all ${
-                                   selectedInDecade.length > 0
-                                     ? allDecadeSelected
-                                       ? 'bg-blue-600 text-white'
-                                       : 'bg-blue-100 text-blue-800 border border-blue-300'
-                                     : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                                 }`}
-                               >
-                                 {decadeInt}s
-                               </button>
-                               
-                               {/* Individual Year Buttons */}
-                               <div className="mt-2 grid grid-cols-4 gap-1">
-                                 {decadeYears.map(year => (
-                                   <button
-                                     key={year}
-                                     onClick={() => toggleFilter(year, selectedYears, setSelectedYears)}
-                                     className={`px-2 py-1 text-xs rounded border transition-all ${
-                                       selectedYears.includes(year)
-                                         ? 'bg-blue-500 text-white border-blue-500'
-                                         : 'bg-white text-blue-600 border-blue-200 hover:border-blue-400 hover:bg-blue-50'
-                                     }`}
-                                   >
-                                     {year.toString().slice(-2)}
-                                   </button>
-                                 ))}
-                               </div>
-                             </div>
-                           );
-                         });
-                     })()}
-                   </div>
-                 </div>
-               )}
-
-               {/* Singers Tab */}
-               {activeFilterTab === 'singers' && (
-                 <div>
-                   <h4 className="text-sm font-medium text-gray-800 mb-3">Select Singers</h4>
-                   <div className="space-y-2">
-                     {uniqueSingers.map(singer => (
-                       <FilterButton
-                         key={singer}
-                         active={selectedSingers.includes(singer)}
-                         onClick={() => toggleFilter(singer, selectedSingers, setSelectedSingers)}
-                       >
-                         {singer}
-                       </FilterButton>
-                     ))}
-                   </div>
-                 </div>
-               )}
-
-               {/* Composers Tab */}
-               {activeFilterTab === 'composers' && (
-                 <div>
-                   <h4 className="text-sm font-medium text-gray-800 mb-3">Select Composers</h4>
-                   <div className="space-y-2">
-                     {uniqueComposers.map(composer => (
-                       <FilterButton
-                         key={composer}
-                         active={selectedComposers.includes(composer)}
-                         onClick={() => toggleFilter(composer, selectedComposers, setSelectedComposers)}
-                       >
-                         {composer}
-                       </FilterButton>
-                     ))}
-                   </div>
-                 </div>
-               )}
-
-               {/* Lyricists Tab */}
-               {activeFilterTab === 'lyricists' && (
-                 <div>
-                   <h4 className="text-sm font-medium text-gray-800 mb-3">Select Lyricists</h4>
-                   <div className="space-y-2">
-                     {uniqueLyricists.map(lyricist => (
-                       <FilterButton
-                         key={lyricist}
-                         active={selectedLyricists.includes(lyricist)}
-                         onClick={() => toggleFilter(lyricist, selectedLyricists, setSelectedLyricists)}
-                       >
-                         {lyricist}
-                       </FilterButton>
-                     ))}
-                   </div>
-                 </div>
-               )}
-
-               {/* Active Chart Filters */}
-               {(chartFilters.year || chartFilters.singer || chartFilters.composer || chartFilters.lyricist) && (
-                 <div className="mt-6 pt-4 border-t border-gray-200">
-                   <h4 className="text-sm font-medium text-gray-800 mb-2">Chart Filters</h4>
-                   <div className="space-y-2">
-                     {chartFilters.year && (
-                       <div className="flex items-center justify-between bg-blue-100 px-3 py-2 rounded-lg">
-                         <span className="text-sm">Year: {chartFilters.year}</span>
-                         <button 
-                           onClick={() => setChartFilters(prev => ({ ...prev, year: null }))} 
-                           className="text-blue-600 hover:text-blue-800 font-medium"
-                         >
-                           ×
-                         </button>
-                       </div>
-                     )}
-                     {chartFilters.singer && (
-                       <div className="flex items-center justify-between bg-blue-100 px-3 py-2 rounded-lg">
-                         <span className="text-sm">Singer: {chartFilters.singer}</span>
-                         <button 
-                           onClick={() => setChartFilters(prev => ({ ...prev, singer: null }))} 
-                           className="text-blue-600 hover:text-blue-800 font-medium"
-                         >
-                           ×
-                         </button>
-                       </div>
-                     )}
-                     {chartFilters.composer && (
-                       <div className="flex items-center justify-between bg-blue-100 px-3 py-2 rounded-lg">
-                         <span className="text-sm">Composer: {chartFilters.composer}</span>
-                         <button 
-                           onClick={() => setChartFilters(prev => ({ ...prev, composer: null }))} 
-                           className="text-blue-600 hover:text-blue-800 font-medium"
-                         >
-                           ×
-                         </button>
-                       </div>
-                     )}
-                     {chartFilters.lyricist && (
-                       <div className="flex items-center justify-between bg-blue-100 px-3 py-2 rounded-lg">
-                         <span className="text-sm">Lyricist: {chartFilters.lyricist}</span>
-                         <button 
-                           onClick={() => setChartFilters(prev => ({ ...prev, lyricist: null }))} 
-                           className="text-blue-600 hover:text-blue-800 font-medium"
-                         >
-                           ×
-                         </button>
-                       </div>
-                     )}
-                   </div>
-                 </div>
-               )}
-             </div>
-
-             {/* Apply Button */}
-             <div className="p-4 border-t border-gray-200">
-               <button
-                 onClick={() => setShowFilters(false)}
-                 className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-               >
-                 Apply Filters ({filteredSongs.length} songs)
-               </button>
-             </div>
-           </div>
-         </div>
-       </div>
-     )}
    </div>
  );
 };
