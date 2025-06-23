@@ -39,6 +39,30 @@ const CleanYouTubePlayer = ({
     }
   }, [isPlaying, player, videoId]);
 
+  // Reset current song index when playlist changes
+useEffect(() => {
+  if (currentSongIndex >= currentPlaylist.length && currentPlaylist.length > 0) {
+    setCurrentSongIndex(0);
+  }
+}, [currentPlaylist.length, currentSongIndex]);
+
+// Reset to song 1 when filters change
+useEffect(() => {
+  if (currentPlaylist.length > 0) {
+    setCurrentSongIndex(0);
+  }
+}, [
+  searchTerm,
+  selectedYears.length,
+  selectedComposers.length, 
+  selectedSingers.length,
+  selectedLyricists.length,
+  chartFilters.year,
+  chartFilters.singer,
+  chartFilters.composer,
+  chartFilters.lyricist
+]);
+  
   const searchForVideo = async (song) => {
     setIsLoading(true);
     setError(null);
@@ -363,83 +387,83 @@ const TamilSongsMobile = () => {
   );
 
   // Mobile Views
-  const HomeView = () => (
-    <div className="space-y-4">
-      {/* Current Playing - Clean Layout */}
-      {currentSong && (
-        <div className="bg-gradient-to-r from-sky-400 to-sky-500 text-white rounded-xl overflow-hidden">
-          {/* Song Info */}
-          <div className="p-4">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                <Music className="w-6 h-6" />
-              </div>
-              <div className="flex-1">
-                <div className="font-bold text-lg">{currentSong.song}</div>
-                <div className="text-sky-100 text-sm">{currentSong.movie}</div>
-                <div className="text-sky-200 text-xs">{currentSong.singer}</div>
-              </div>
+const HomeView = () => (
+  <div className="space-y-4">
+    {/* Current Playing - Clean Layout */}
+    {currentSong && (
+      <div className="bg-gradient-to-r from-sky-400 to-sky-500 text-white rounded-xl overflow-hidden">
+        {/* 1. VIDEO ON TOP */}
+        <div className="bg-white">
+          <CleanYouTubePlayer
+            song={currentSong}
+            isPlaying={isPlaying}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onNext={playNext}
+            onPrevious={playPrevious}
+            className="rounded-none border-0"
+          />
+        </div>
+
+        {/* 2. CONTROLS BELOW VIDEO */}
+        <div className="p-4">
+          <div className="flex items-center justify-center gap-4">
+            <button 
+              onClick={() => setIsShuffled(!isShuffled)}
+              className={`p-2 rounded-full transition-all ${
+                isShuffled ? 'bg-blue-600 text-white' : 'bg-white/90 text-sky-600 hover:bg-white'
+              }`}
+            >
+              <Shuffle className="w-4 h-4" />
+            </button>
+            
+            <button 
+              onClick={playPrevious}
+              className="p-2 bg-white/90 text-sky-600 rounded-full hover:bg-white transition-all"
+            >
+              <SkipBack className="w-4 h-4" />
+            </button>
+            
+            <button 
+              onClick={togglePlay}
+              className="p-3 bg-white text-sky-600 rounded-full hover:scale-105 transition-all shadow-lg"
+            >
+              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+            </button>
+            
+            <button 
+              onClick={playNext}
+              className="p-2 bg-white/90 text-sky-600 rounded-full hover:bg-white transition-all"
+            >
+              <SkipForward className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* 3. SONG INFO MOVED TO BOTTOM */}
+        <div className="p-4 pt-0">
+          <div className="flex items-center gap-4 mb-2">
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Music className="w-6 h-6" />
+            </div>
+            <div className="flex-1">
+              <div className="font-bold text-lg">{currentSong.song}</div>
+              <div className="text-sky-100 text-sm">{currentSong.movie}</div>
+              <div className="text-sky-200 text-xs">{currentSong.singer}</div>
             </div>
           </div>
 
-          {/* 1. PLAYER ON TOP */}
-          <div className="bg-white">
-            <CleanYouTubePlayer
-              song={currentSong}
-              isPlaying={isPlaying}
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
-              onNext={playNext}
-              onPrevious={playPrevious}
-              className="rounded-none border-0"
-            />
-          </div>
-
-          {/* 2. CONTROLS BELOW */}
-          <div className="p-4">
-            <div className="flex items-center justify-center gap-4">
-              <button 
-                onClick={() => setIsShuffled(!isShuffled)}
-                className={`p-2 rounded-full transition-all ${
-                  isShuffled ? 'bg-blue-600 text-white' : 'bg-white/90 text-sky-600 hover:bg-white'
-                }`}
-              >
-                <Shuffle className="w-4 h-4" />
-              </button>
-              
-              <button 
-                onClick={playPrevious}
-                className="p-2 bg-white/90 text-sky-600 rounded-full hover:bg-white transition-all"
-              >
-                <SkipBack className="w-4 h-4" />
-              </button>
-              
-              <button 
-                onClick={togglePlay}
-                className="p-3 bg-white text-sky-600 rounded-full hover:scale-105 transition-all shadow-lg"
-              >
-                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-              </button>
-              
-              <button 
-                onClick={playNext}
-                className="p-2 bg-white/90 text-sky-600 rounded-full hover:bg-white transition-all"
-              >
-                <SkipForward className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Status */}
-            <div className="text-center mt-3">
-              <div className="text-xs text-sky-100">
-                📺 Auto-advancing playlist
-              </div>
+          {/* Now Playing Status */}
+          <div className="text-center">
+            <div className="text-xs text-sky-100">
+              Now Playing {currentSongIndex + 1} of {currentPlaylist.length}
             </div>
           </div>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    )}
+  </div>
+);
 
   const FilterView = () => {
   return (
