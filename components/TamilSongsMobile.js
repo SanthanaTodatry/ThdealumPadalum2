@@ -39,30 +39,6 @@ const CleanYouTubePlayer = ({
     }
   }, [isPlaying, player, videoId]);
 
-  // Reset current song index when playlist changes
-useEffect(() => {
-  if (currentSongIndex >= currentPlaylist.length && currentPlaylist.length > 0) {
-    setCurrentSongIndex(0);
-  }
-}, [currentPlaylist.length, currentSongIndex]);
-
-// Reset to song 1 when filters change
-useEffect(() => {
-  if (currentPlaylist.length > 0) {
-    setCurrentSongIndex(0);
-  }
-}, [
-  searchTerm,
-  selectedYears.length,
-  selectedComposers.length, 
-  selectedSingers.length,
-  selectedLyricists.length,
-  chartFilters.year,
-  chartFilters.singer,
-  chartFilters.composer,
-  chartFilters.lyricist
-]);
-  
   const searchForVideo = async (song) => {
     setIsLoading(true);
     setError(null);
@@ -315,7 +291,31 @@ const TamilSongsMobile = () => {
   }, [filteredSongs, isShuffled]);
 
   const currentSong = currentPlaylist[currentSongIndex] || null;
-
+  
+  // Reset current song index when playlist changes
+  useEffect(() => {
+    if (currentSongIndex >= currentPlaylist.length && currentPlaylist.length > 0) {
+      setCurrentSongIndex(0);
+    }
+  }, [currentPlaylist.length, currentSongIndex]);
+  
+  // Reset to song 1 when filters change
+  useEffect(() => {
+    if (currentPlaylist.length > 0) {
+      setCurrentSongIndex(0);
+    }
+  }, [
+    searchTerm,
+    selectedYears.length,
+    selectedComposers.length, 
+    selectedSingers.length,
+    selectedLyricists.length,
+    chartFilters.year,
+    chartFilters.singer,
+    chartFilters.composer,
+    chartFilters.lyricist
+  ]);
+    
   // Audio control functions
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
