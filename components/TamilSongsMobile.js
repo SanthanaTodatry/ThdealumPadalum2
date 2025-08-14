@@ -177,6 +177,23 @@ const TamilSongsMobile = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [isShuffled, setIsShuffled] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(false);
+
+	// Add this useEffect for orientation detection:
+	useEffect(() => {
+	  const handleOrientationChange = () => {
+		setIsLandscape(window.innerHeight < window.innerWidth);
+	  };
+
+	  handleOrientationChange(); // Check initial orientation
+	  window.addEventListener('resize', handleOrientationChange);
+	  window.addEventListener('orientationchange', handleOrientationChange);
+
+	  return () => {
+		window.removeEventListener('resize', handleOrientationChange);
+		window.removeEventListener('orientationchange', handleOrientationChange);
+	  };
+	}, []);
 
   // Filter functions
   const toggleFilter = (item, selectedItems, setSelectedItems) => {
@@ -387,10 +404,10 @@ const TamilSongsMobile = () => {
 
   // Mobile Views
 const HomeView = () => (
-  <div className="space-y-4">
-    {/* Current Playing - Clean Layout */}
+  <div className="flex items-center justify-center min-h-full"> {/* Vertically centered */}
+    {/* Current Playing - Enhanced Layout */}
     {currentSong && (
-      <div className="bg-gradient-to-r from-sky-400 to-sky-500 text-white rounded-xl overflow-hidden">
+      <div className="bg-gradient-to-r from-sky-400 to-sky-500 text-white rounded-xl overflow-hidden w-full max-w-md">
         {/* 1. VIDEO ON TOP */}
         <div className="bg-white">
           <CleanYouTubePlayer
@@ -404,57 +421,78 @@ const HomeView = () => (
           />
         </div>
 
-        {/* 2. CONTROLS BELOW VIDEO */}
-        <div className="p-4">
+        {/* 2. ENHANCED CONTROLS - 5 BIGGER BUTTONS */}
+        <div className="p-6">
           <div className="flex items-center justify-center gap-4">
+            {/* Skip to First */}
+            <button 
+              onClick={() => setCurrentSongIndex(0)}
+              className="p-3 bg-white/90 text-sky-600 rounded-full hover:bg-white transition-all shadow-md"
+              disabled={currentPlaylist.length === 0 || currentSongIndex === 0}
+            >
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                <path d="M4 4a1 1 0 011 1v10a1 1 0 11-2 0V5a1 1 0 011-1z" />
+              </svg>
+            </button>
+            
+            {/* Previous */}
+            <button 
+              onClick={playPrevious}
+              className="p-3 bg-white/90 text-sky-600 rounded-full hover:bg-white transition-all shadow-md"
+              disabled={currentPlaylist.length === 0}
+            >
+              <SkipBack className="w-6 h-6" />
+            </button>
+            
+            {/* Play/Pause - Center & Biggest */}
+            <button 
+              onClick={togglePlay}
+              className="p-4 bg-white text-sky-600 rounded-full hover:scale-105 transition-all shadow-lg"
+              disabled={currentPlaylist.length === 0}
+            >
+              {isPlaying ? <Pause className="w-7 h-7" /> : <Play className="w-7 h-7" />}
+            </button>
+            
+            {/* Next */}
+            <button 
+              onClick={playNext}
+              className="p-3 bg-white/90 text-sky-600 rounded-full hover:bg-white transition-all shadow-md"
+              disabled={currentPlaylist.length === 0}
+            >
+              <SkipForward className="w-6 h-6" />
+            </button>
+
+            {/* Shuffle/Unshuffle */}
             <button 
               onClick={() => setIsShuffled(!isShuffled)}
-              className={`p-2 rounded-full transition-all ${
+              className={`p-3 rounded-full transition-all shadow-md ${
                 isShuffled ? 'bg-blue-600 text-white' : 'bg-white/90 text-sky-600 hover:bg-white'
               }`}
             >
-              <Shuffle className="w-4 h-4" />
-            </button>
-            
-            <button 
-              onClick={playPrevious}
-              className="p-2 bg-white/90 text-sky-600 rounded-full hover:bg-white transition-all"
-            >
-              <SkipBack className="w-4 h-4" />
-            </button>
-            
-            <button 
-              onClick={togglePlay}
-              className="p-3 bg-white text-sky-600 rounded-full hover:scale-105 transition-all shadow-lg"
-            >
-              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-            </button>
-            
-            <button 
-              onClick={playNext}
-              className="p-2 bg-white/90 text-sky-600 rounded-full hover:bg-white transition-all"
-            >
-              <SkipForward className="w-4 h-4" />
+              <Shuffle className="w-6 h-6" />
             </button>
           </div>
         </div>
 
-        {/* 3. SONG INFO MOVED TO BOTTOM */}
-        <div className="p-4 pt-0">
-          <div className="flex items-center gap-4 mb-2">
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <Music className="w-6 h-6" />
-            </div>
-            <div className="flex-1">
-              <div className="font-bold text-lg">{currentSong.song}</div>
-              <div className="text-sky-100 text-sm">{currentSong.movie}</div>
-              <div className="text-sky-200 text-xs">{currentSong.singer}</div>
+        {/* 3. ENHANCED SONG INFORMATION */}
+        <div className="px-6 pb-6">
+          {/* Main Song Info */}
+          <div className="text-center mb-4">
+            <div className="font-bold text-xl mb-1">{currentSong.song}</div>
+            <div className="text-sky-100 text-base mb-3">{currentSong.movie} ({currentSong.year})</div>
+            
+            {/* Detailed Credits */}
+            <div className="space-y-1 text-sm text-sky-200">
+              <div><span className="font-medium">Composer:</span> {currentSong.composer}</div>
+              <div><span className="font-medium">Singer:</span> {currentSong.singer}</div>
+              <div><span className="font-medium">Lyricist:</span> {currentSong.lyricist}</div>
             </div>
           </div>
 
-          {/* Now Playing Status */}
-          <div className="text-center">
-            <div className="text-xs text-sky-100">
+          {/* Now Playing Status - Bigger & Separated */}
+          <div className="text-center border-t border-sky-300/30 pt-4">
+            <div className="text-base font-medium text-sky-100">
               Now Playing {currentSongIndex + 1} of {currentPlaylist.length}
             </div>
           </div>
@@ -648,14 +686,21 @@ const HomeView = () => (
   );
 };
 
-  const PlaylistView = () => {
-    // Sort playlist by song name
-    const sortedPlaylist = useMemo(() => {
-      return [...currentPlaylist].sort((a, b) => a.song.localeCompare(b.song));
-    }, [currentPlaylist]);
+const PlaylistView = () => {
+	  // Sort playlist by song name
+	  const sortedPlaylist = useMemo(() => {
+		return [...currentPlaylist].sort((a, b) => a.song.localeCompare(b.song));
+	  }, [currentPlaylist]);
 
     return (
       <div className="space-y-4">
+		{/* PLAYLIST COUNT HEADING */}
+		<div className="bg-white rounded-lg border border-gray-200 p-4">
+			<h2 className="text-lg font-semibold text-gray-800">
+			  Playlist ({currentPlaylist.length} songs)
+			</h2>
+		</div>
+	  
         <div className="space-y-3">
           {sortedPlaylist.map((song, index) => (
             <div 
@@ -697,24 +742,74 @@ const HomeView = () => (
     );
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-4 py-4 sticky top-0 z-50">
-        {/* Centered Tamil Title */}
-        <div className="text-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent animate-pulse">
-            தேடலும் பாடலும்
-          </h1>
+return (
+  <div className="min-h-screen bg-gray-50 flex flex-col">
+    {/* LANDSCAPE MODE - Only Video Player */}
+    {isLandscape && currentSong ? (
+      <div className="h-screen bg-black flex items-center justify-center">
+        <div className="w-full h-full flex flex-col">
+          {/* Video Player Full Width */}
+          <div className="flex-1 bg-white">
+            <CleanYouTubePlayer
+              song={currentSong}
+              isPlaying={isPlaying}
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onNext={playNext}
+              onPrevious={playPrevious}
+              className="w-full h-full"
+            />
+          </div>
+          
+          {/* Controls at Bottom */}
+          <div className="bg-gradient-to-r from-sky-400 to-sky-500 p-4">
+            <div className="flex items-center justify-center gap-6">
+              {/* Same 5 buttons as portrait */}
+              <button onClick={() => setCurrentSongIndex(0)} className="p-3 bg-white/90 text-sky-600 rounded-full">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+              <button onClick={playPrevious} className="p-3 bg-white/90 text-sky-600 rounded-full">
+                <SkipBack className="w-6 h-6" />
+              </button>
+              <button onClick={togglePlay} className="p-4 bg-white text-sky-600 rounded-full">
+                {isPlaying ? <Pause className="w-7 h-7" /> : <Play className="w-7 h-7" />}
+              </button>
+              <button onClick={playNext} className="p-3 bg-white/90 text-sky-600 rounded-full">
+                <SkipForward className="w-6 h-6" />
+              </button>
+              <button onClick={() => setIsShuffled(!isShuffled)} className={`p-3 rounded-full ${isShuffled ? 'bg-blue-600 text-white' : 'bg-white/90 text-sky-600'}`}>
+                <Shuffle className="w-6 h-6" />
+              </button>
+            </div>
+            
+            {/* Song info in landscape */}
+            <div className="text-center mt-4 text-white">
+              <div className="font-bold">{currentSong.song}</div>
+              <div className="text-sky-100 text-sm">{currentSong.movie} • {currentSong.singer}</div>
+            </div>
+          </div>
         </div>
       </div>
+    ) : (
+      // PORTRAIT MODE - Normal Layout
+      <>
+        {/* Header - same as before */}
+        <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-4 py-4 sticky top-0 z-50">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent animate-pulse">
+              தேடலும் பாடலும்
+            </h1>
+          </div>
+        </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-4 pb-32"> {/* Increased bottom padding for new navigation height */}
-        {currentView === 'home' && <HomeView />}
-        {currentView === 'filter' && <FilterView />}
-        {currentView === 'playlist' && <PlaylistView />}
-      </div>
+        {/* Main Content */}
+        <div className="flex-1 p-4 pb-32">
+          {currentView === 'home' && <HomeView />}
+          {currentView === 'filter' && <FilterView />}
+          {currentView === 'playlist' && <PlaylistView />}
+        </div>
 
      {/* Bottom Navigation with Search and Filter Controls */}
      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 border-t border-white/20 px-4 py-3 sticky bottom-0">
