@@ -929,9 +929,8 @@ return (
            <span className="text-xs">Reset</span>
          </button>
        </div>
-     </div>
-  </div>
-  </>
+     </div>  
+	 </> 
     )}
   </div>
 );
