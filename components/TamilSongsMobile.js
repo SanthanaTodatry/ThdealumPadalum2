@@ -794,7 +794,7 @@ return (
       </div>
     ) : (
       // PORTRAIT MODE - Normal Layout
-      <>
+      
         {/* Header - same as before */}
         <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-4 py-4 sticky top-0 z-50">
           <div className="text-center">
@@ -935,3 +935,4 @@ return (
 };
 
 export default TamilSongsMobile;
+
