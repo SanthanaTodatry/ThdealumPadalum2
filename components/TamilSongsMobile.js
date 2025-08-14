@@ -764,7 +764,7 @@ return (
           {/* Controls at Bottom */}
           <div className="bg-gradient-to-r from-sky-400 to-sky-500 p-4">
             <div className="flex items-center justify-center gap-6">
-              {/* Same 5 buttons as portrait */}
+              {/* Skip to First */}
               <button onClick={() => setCurrentSongIndex(0)} className="p-3 bg-white/90 text-sky-600 rounded-full">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -795,8 +795,9 @@ return (
     ) : (
       // PORTRAIT MODE - Normal Layout
       <>
-        {/* Header - same as before */}
+        {/* Header */}
         <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 text-white px-4 py-4 sticky top-0 z-50">
+          {/* Centered Tamil Title */}
           <div className="text-center">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent animate-pulse">
               தேடலும் பாடலும்
@@ -811,128 +812,129 @@ return (
           {currentView === 'playlist' && <PlaylistView />}
         </div>
 
-     {/* Bottom Navigation with Search and Filter Controls */}
-     <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 border-t border-white/20 px-4 py-3 sticky bottom-0">
-       {/* Search - Available on all pages */}
-       <div className="relative mb-3">
-         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white w-4 h-4 z-10" />
-         <input
-           type="text"
-           value={searchTerm}
-           onChange={(e) => setSearchTerm(e.target.value)}
-           className="w-full pl-10 pr-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 focus:border-white/50"
-           placeholder="Search songs, artists..."
-         />
-       </div>
-       
-       {/* Filter Control Bar */}
-       <div className="mb-3">
-         <div className="grid grid-cols-4 gap-2">
-           <button
-             onClick={() => {
-               setActiveFilterTab('years');
-               setCurrentView('filter');
-             }}
-             className={`py-2 px-2 text-center transition-all rounded-lg ${
-               activeFilterTab === 'years' && currentView === 'filter'
-                 ? 'text-yellow-300 bg-white/20 border border-white/30' 
-                 : 'text-white/80 bg-white/10 hover:bg-white/20'
-             }`}
-           >
-             <div className="text-xs font-medium">Years</div>
-             {selectedYears.length > 0 && (
-               <div className="text-xs text-yellow-300">({selectedYears.length})</div>
-             )}
-           </button>
-           <button
-             onClick={() => {
-               setActiveFilterTab('singers');
-               setCurrentView('filter');
-             }}
-             className={`py-2 px-2 text-center transition-all rounded-lg ${
-               activeFilterTab === 'singers' && currentView === 'filter'
-                 ? 'text-yellow-300 bg-white/20 border border-white/30' 
-                 : 'text-white/80 bg-white/10 hover:bg-white/20'
-             }`}
-           >
-             <div className="text-xs font-medium">Singers</div>
-             {selectedSingers.length > 0 && (
-               <div className="text-xs text-yellow-300">({selectedSingers.length})</div>
-             )}
-           </button>
-           <button
-             onClick={() => {
-               setActiveFilterTab('composers');
-               setCurrentView('filter');
-             }}
-             className={`py-2 px-2 text-center transition-all rounded-lg ${
-               activeFilterTab === 'composers' && currentView === 'filter'
-                 ? 'text-yellow-300 bg-white/20 border border-white/30' 
-                 : 'text-white/80 bg-white/10 hover:bg-white/20'
-             }`}
-           >
-             <div className="text-xs font-medium">Composers</div>
-             {selectedComposers.length > 0 && (
-               <div className="text-xs text-yellow-300">({selectedComposers.length})</div>
-             )}
-           </button>
-           <button
-             onClick={() => {
-               setActiveFilterTab('lyricists');
-               setCurrentView('filter');
-             }}
-             className={`py-2 px-2 text-center transition-all rounded-lg ${
-               activeFilterTab === 'lyricists' && currentView === 'filter'
-                 ? 'text-yellow-300 bg-white/20 border border-white/30' 
-                 : 'text-white/80 bg-white/10 hover:bg-white/20'
-             }`}
-           >
-             <div className="text-xs font-medium">Lyricists</div>
-             {selectedLyricists.length > 0 && (
-               <div className="text-xs text-yellow-300">({selectedLyricists.length})</div>
-             )}
-           </button>
-         </div>
-       </div>
-       
-       {/* Navigation Buttons - Only 3 now */}
-       <div className="flex justify-around">
-         <button
-           onClick={() => setCurrentView('home')}
-           className={`flex flex-col items-center py-2 px-4 rounded-lg transition-all ${
-             currentView === 'home' 
-               ? 'text-yellow-300 bg-white/20' 
-               : 'text-white/80 hover:text-white hover:bg-white/10'
-           }`}
-         >
-           <Home className="w-5 h-5 mb-1" />
-           <span className="text-xs">Home</span>
-         </button>
-         
-         <button
-           onClick={() => setCurrentView('playlist')}
-           className={`flex flex-col items-center py-2 px-4 rounded-lg transition-all ${
-             currentView === 'playlist' 
-               ? 'text-yellow-300 bg-white/20' 
-               : 'text-white/80 hover:text-white hover:bg-white/10'
-           }`}
-         >
-           <Music className="w-5 h-5 mb-1" />
-           <span className="text-xs">Playlist</span>
-         </button>
-         
-         <button
-           onClick={resetFilters}
-           className="flex flex-col items-center py-2 px-4 rounded-lg transition-all text-white/80 hover:text-white hover:bg-white/10"
-         >
-           <RotateCcw className="w-5 h-5 mb-1" />
-           <span className="text-xs">Reset</span>
-         </button>
-       </div>
-     </div>  
-	 </> 
+        {/* Bottom Navigation with Search and Filter Controls */}
+        <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 border-t border-white/20 px-4 py-3 sticky bottom-0">
+          {/* Search - Available on all pages */}
+          <div className="relative mb-3">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white w-4 h-4 z-10" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 focus:border-white/50"
+              placeholder="Search songs, artists..."
+            />
+          </div>
+          
+          {/* Filter Control Bar */}
+          <div className="mb-3">
+            <div className="grid grid-cols-4 gap-2">
+              <button
+                onClick={() => {
+                  setActiveFilterTab('years');
+                  setCurrentView('filter');
+                }}
+                className={`py-2 px-2 text-center transition-all rounded-lg ${
+                  activeFilterTab === 'years' && currentView === 'filter'
+                    ? 'text-yellow-300 bg-white/20 border border-white/30' 
+                    : 'text-white/80 bg-white/10 hover:bg-white/20'
+                }`}
+              >
+                <div className="text-xs font-medium">Years</div>
+                {selectedYears.length > 0 && (
+                  <div className="text-xs text-yellow-300">({selectedYears.length})</div>
+                )}
+              </button>
+              <button
+                onClick={() => {
+                  setActiveFilterTab('singers');
+                  setCurrentView('filter');
+                }}
+                className={`py-2 px-2 text-center transition-all rounded-lg ${
+                  activeFilterTab === 'singers' && currentView === 'filter'
+                    ? 'text-yellow-300 bg-white/20 border border-white/30' 
+                    : 'text-white/80 bg-white/10 hover:bg-white/20'
+                }`}
+              >
+                <div className="text-xs font-medium">Singers</div>
+                {selectedSingers.length > 0 && (
+                  <div className="text-xs text-yellow-300">({selectedSingers.length})</div>
+                )}
+              </button>
+              <button
+                onClick={() => {
+                  setActiveFilterTab('composers');
+                  setCurrentView('filter');
+                }}
+                className={`py-2 px-2 text-center transition-all rounded-lg ${
+                  activeFilterTab === 'composers' && currentView === 'filter'
+                    ? 'text-yellow-300 bg-white/20 border border-white/30' 
+                    : 'text-white/80 bg-white/10 hover:bg-white/20'
+                }`}
+              >
+                <div className="text-xs font-medium">Composers</div>
+                {selectedComposers.length > 0 && (
+                  <div className="text-xs text-yellow-300">({selectedComposers.length})</div>
+                )}
+              </button>
+              <button
+                onClick={() => {
+                  setActiveFilterTab('lyricists');
+                  setCurrentView('filter');
+                }}
+                className={`py-2 px-2 text-center transition-all rounded-lg ${
+                  activeFilterTab === 'lyricists' && currentView === 'filter'
+                    ? 'text-yellow-300 bg-white/20 border border-white/30' 
+                    : 'text-white/80 bg-white/10 hover:bg-white/20'
+                }`}
+              >
+                <div className="text-xs font-medium">Lyricists</div>
+                {selectedLyricists.length > 0 && (
+                  <div className="text-xs text-yellow-300">({selectedLyricists.length})</div>
+                )}
+              </button>
+            </div>
+          </div>
+          
+          {/* Navigation Buttons - Only 3 now */}
+          <div className="flex justify-around">
+            <button
+              onClick={() => setCurrentView('home')}
+              className={`flex flex-col items-center py-2 px-4 rounded-lg transition-all ${
+                currentView === 'home' 
+                  ? 'text-yellow-300 bg-white/20' 
+                  : 'text-white/80 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Home className="w-5 h-5 mb-1" />
+              <span className="text-xs">Home</span>
+            </button>
+            
+            <button
+              onClick={() => setCurrentView('playlist')}
+              className={`flex flex-col items-center py-2 px-4 rounded-lg transition-all ${
+                currentView === 'playlist' 
+                  ? 'text-yellow-300 bg-white/20' 
+                  : 'text-white/80 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Music className="w-5 h-5 mb-1" />
+              <span className="text-xs">Playlist</span>
+            </button>
+            
+            <button
+              onClick={resetFilters}
+              className="flex flex-col items-center py-2 px-4 rounded-lg transition-all text-white/80 hover:text-white hover:bg-white/10"
+            >
+              <RotateCcw className="w-5 h-5 mb-1" />
+              <span className="text-xs">Reset</span>
+            </button>
+          </div>
+        </div>
+      </>
     )}
   </div>
 );
 
 export default TamilSongsMobile;
+
